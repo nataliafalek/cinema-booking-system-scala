@@ -1,4 +1,4 @@
-package model
+package com.faleknatalia.cinemaBookingSystem
 
 case class Movie(
                 id: Long,
