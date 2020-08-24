@@ -1,3 +1,5 @@
 target
 ui/node_modules
-.idea
+.idea/*
+project/
+server/.idea/*
