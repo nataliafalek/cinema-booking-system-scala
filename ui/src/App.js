@@ -3,13 +3,13 @@ import './App.css';
 import AppSkeleton from './AppSkeleton'
 
 class App extends Component {
-render() {
-  return (
-    <div className="App">
-    <AppSkeleton/>
-    </div>
-  );
-}
+    render() {
+        return (
+            <div className="App">
+                <AppSkeleton/>
+            </div>
+        );
+    }
 
 }
 
