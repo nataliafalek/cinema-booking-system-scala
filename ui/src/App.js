@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import './App.css';
-import AppDrawer from './AppDrawer'
+import AppSkeleton from './AppSkeleton'
 
 class App extends Component {
 render() {
   return (
     <div className="App">
-    <AppDrawer/>
+    <AppSkeleton/>
     </div>
   );
 }

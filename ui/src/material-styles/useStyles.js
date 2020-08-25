@@ -20,11 +20,12 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        backgroundImage: "url('./drawer2.jpg')",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "top",
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed",
+        background: 'rgba(0, 0, 0, 0.87)',
+        // backgroundImage: "url('./drawer4.jpg')",
+        // backgroundRepeat: "no-repeat",
+        // backgroundPosition: "top",
+        // backgroundSize: "cover",
+        // backgroundAttachment: "fixed",
         height: "100%"
     },
     drawerContainer: {
@@ -34,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
-        background: '#fff5f8',
         marginLeft: drawerWidth,
         width: '100%',
     },
