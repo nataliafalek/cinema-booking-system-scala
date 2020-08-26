@@ -1,4 +1,4 @@
-package com.faleknatalia.cinemaBookingSystem.repository
+package com.faleknatalia.cinemaBookingSystem.movie
 
 import java.time.LocalDateTime
 

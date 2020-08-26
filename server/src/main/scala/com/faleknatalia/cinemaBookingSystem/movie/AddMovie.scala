@@ -1,3 +1,6 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
-case class MovieForm(title: String)
+case class AddMovie(title: String,
+                    description: String,
+                    durationInSeconds: Long,
+                    imageUrl: String)
