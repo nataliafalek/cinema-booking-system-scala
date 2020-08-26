@@ -6,8 +6,8 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import com.faleknatalia.cinemaBookingSystem.model.ScheduledMovie
-import com.faleknatalia.cinemaBookingSystem.repository.{MovieDao, ScheduledMovieDao}
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, MovieDao, ScheduledMovieDao}
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.TableQuery
@@ -21,20 +21,35 @@ object Main extends JsonSupport {
     implicit val system = ActorSystem(Behaviors.empty, "my-system")
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.executionContext
-
-    val route =
-      path("hello") {
-        get {
-          complete(ScheduledMovie(1L, LocalDateTime.now(), 2L))
-        }
-      }
-
-    val bindingFuture = Http().newServerAt("localhost", 8080).bind(route)
-
-    //TODO to refactor
     val db = Database.forConfig("db")
     val movies = TableQuery[MovieDao]
     val scheduledMovie = TableQuery[ScheduledMovieDao]
+
+    val route = {
+      path("hello") {
+        get {
+          complete(movie.ScheduledMovie(1L, LocalDateTime.now(), 2L))
+        }
+      } ~ path("movie" / "add") {
+        cors() {
+          post {
+            entity(as[AddMovie]) { movieForm =>
+              //TODO add aoutoincrementing primary key and used slick's `into`
+              val saveNewMovie =
+                sql"""
+                     insert into movie
+                     values (1, ${movieForm.title}, ${movieForm.description}, ${movieForm.durationInSeconds}, ${movieForm.imageUrl})
+                """.as[(Long, String, String, Long, String)]
+              db.run(saveNewMovie)
+              complete(movieForm)
+            }
+          }
+        }
+      }
+    }
+
+    val bindingFuture = Http().newServerAt("localhost", 8080).bind(route)
+
     db.run(movies.result).map(_.foreach { case (id, title, description, durationInSeconds, imageUrl) =>
       println(s"${id} -- ${title} -- ${description}")
     })

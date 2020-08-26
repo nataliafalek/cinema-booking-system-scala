@@ -1,4 +1,4 @@
-package com.faleknatalia.cinemaBookingSystem.repository
+package com.faleknatalia.cinemaBookingSystem.movie
 
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag

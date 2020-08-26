@@ -3,7 +3,7 @@ package com.faleknatalia.cinemaBookingSystem
 import java.time.LocalDateTime
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.faleknatalia.cinemaBookingSystem.model.ScheduledMovie
+import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, ScheduledMovie}
 import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -13,4 +13,5 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     override def write(obj: LocalDateTime): JsValue = JsString(obj.toString)
   }
   implicit val scheduledMovieFormat = jsonFormat3(ScheduledMovie)
+  implicit val addMovieFormat = jsonFormat4(AddMovie)
 }
