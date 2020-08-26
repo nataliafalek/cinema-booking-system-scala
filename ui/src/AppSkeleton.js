@@ -17,12 +17,19 @@ import Route from "react-router-dom/Route";
 import Movies from "./Movies";
 import NavLink from "react-router-dom/NavLink";
 import Profile from "./Profile";
+import LoginUser from "./LoginUser";
 
 export default function AppSkeleton() {
     const classes = useStyles();
 
+    const isLogged = () => {
+        //TODO temporarily commented
+        // const user = useSelector(state => state.user)
+        // return _.values(user).some(value => value !== null)
+        return true
+    }
     return (
-        <div className={classes.root}>
+        isLogged() ? <div className={classes.root}>
             <CssBaseline/>
             <AppBarTop styles={classes}/>
             <HashRouter>
@@ -33,7 +40,11 @@ export default function AppSkeleton() {
                     <Route path="/profile" component={Profile}/>
                 </main>
             </HashRouter>
-        </div>
+        </div> :
+            <HashRouter>
+                <CssBaseline/>
+                    <Route path="/" component={LoginUser}/>
+            </HashRouter>
     );
 }
 
@@ -45,7 +56,7 @@ function AppBarTop(props) {
                     NatiCinemaBO
                 </Typography>
                 <Button color="inherit">
-                    <span className={props.styles.spanRedColor}>Login</span>
+                    <span className={props.styles.spanRedColor}>Log out</span>
                 </Button>
             </Toolbar>
         </AppBar>
