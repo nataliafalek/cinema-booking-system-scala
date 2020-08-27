@@ -10,3 +10,12 @@ export function postJson(path, body) {
         body: JSON.stringify(body)
     }));
 }
+
+export function fetchJson(path) {
+    return (fetch(url + path, {
+        method: 'GET',
+        credentials: 'include'
+    }).then(results => {
+        return results.json();
+    }));
+}
