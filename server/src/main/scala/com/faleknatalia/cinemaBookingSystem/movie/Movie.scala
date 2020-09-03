@@ -1,7 +1,7 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
 case class Movie(
-                  id: Long,
+                  id: Long = 1L,
                   title: String,
                   description: String,
                   durationInSeconds: Long,

@@ -98,6 +98,10 @@ const useStyles = makeStyles((theme) => ({
     selectEmpty: {
         marginTop: theme.spacing(2),
     },
+    textField: {
+        margin: theme.spacing(3),
+        width: 200,
+    },
 }));
 
 export default useStyles;

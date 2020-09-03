@@ -26,7 +26,7 @@ export default function Movies() {
 
     useEffect(() => {
         listAllMovies()
-    });
+    }, []);
 
     const listAllMovies = () => {
         HttpService.fetchJson('movie/list').then( movies => {

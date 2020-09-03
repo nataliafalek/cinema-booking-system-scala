@@ -23,6 +23,7 @@ export default function FormItem(props) {
                 label={props.label}
                 type={props.type}
                 id={props.label}
+                onChange={event => props.setFunc(event.target.value)}
             />
             }
         </Grid>

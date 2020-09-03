@@ -1,13 +1,5 @@
 import React, {useEffect} from 'react';
-import _ from 'lodash';
 import moment from 'moment';
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import TableContainer from "@material-ui/core/TableContainer";
 import useStyles from "./material-styles/useStyles";
 import Button from "@material-ui/core/Button";
 import TodayIcon from "@material-ui/icons/Today";
@@ -24,43 +16,44 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import {Calendar, momentLocalizer} from "react-big-calendar";
+import _ from 'lodash';
+import TextField from '@material-ui/core/TextField';
 
 export default function Schedule() {
-    const daysOfWeek = _.range(0, 7, 1).map(day =>
-        moment().add(day, 'days').format("YYYY-MM-DD"))
-    const hours = _.range(0, 14, 1).map(hour =>
-        moment().hours(10).minutes(0).seconds(0).milliseconds(0).add(hour, 'hour').format("HH:mm:ss"))
-    const classes = useStyles();
+    const localizer = momentLocalizer(moment);
+    const [scheduledMovies, setScheduledMovies] = React.useState([]);
 
+    useEffect(() => {
+        listAllScheduledMovies()
+    }, []);
+
+    const listAllScheduledMovies = () => {
+        HttpService.fetchJson('schedule/movie/list').then( movies => {
+            const formattedMovies = movies.map(movie =>
+            { return {
+                title: movie.title,
+                start: moment(movie.start).toDate(),
+                end:  moment(movie.end).toDate()
+                }
+            })
+            setScheduledMovies(formattedMovies)
+        })
+    }
     return(
         <div>
-            <ScheduleDialog/>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Hour</TableCell>
-                            {daysOfWeek.map ( day => <TableCell>{day}</TableCell>)}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {hours.map((row, idx) => (
-                            <TableRow key={`${row}-${idx}`}>
-                                <TableCell component="th" scope="row">
-                                    {row}
-                                </TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                                <TableCell align="right"></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <ScheduleDialog refreshScheduledMovies={ listAllScheduledMovies } />
+            { !_.isEmpty(scheduledMovies)  ? <Calendar
+                min={moment().hours(10).minutes(0).seconds(0).milliseconds(0).toDate()}
+                defaultView={'week'}
+                views={['week']}
+                localizer={localizer}
+                events={scheduledMovies}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 700 }}
+            /> : null }
         </div>
 
     )
@@ -71,23 +64,24 @@ function ScheduleDialog(props) {
     const [open, setOpen] = React.useState(false);
     const [cinemaHalls, setCinemaHalls] = React.useState([]);
     const [movies, setMovies] = React.useState([]);
-    const [cinemaHallId, setCinemaHallId] = React.useState(1)
-    const [dateOfProjection, setDateOfProjection] = React.useState(null)
+    const [cinemaHall, setCinemaHall] = React.useState('')
+    const [dateOfProjection, setDateOfProjection] = React.useState("")
     const [movie, setMovie] = React.useState('')
     const classes = useStyles();
 
     useEffect(() => {
         listAllMovies()
-    });
+        listAllCinemaHalls()
+    }, []);
 
     const listAllMovies = () => {
-        HttpService.fetchJson('movie/list').then( movies => {
+        HttpService.fetchJson('movie/list').then(movies => {
             setMovies(movies)
         })
     }
 
     const listAllCinemaHalls = () => {
-        HttpService.fetchJson('cinemahall/list').then( cinemahalls => {
+        HttpService.fetchJson('cinemahall/list').then(cinemahalls => {
             setCinemaHalls(cinemahalls)
         })
     }
@@ -100,9 +94,10 @@ function ScheduleDialog(props) {
         setOpen(false);
     }
 
-    const handleMovieID = (event) => {
-        setMovie(event.target.value);
-    };
+    const addScheduledMovie = () => {
+        closeDialog()
+        props.refreshScheduledMovies()
+    }
 
     return (
         <div>
@@ -110,7 +105,7 @@ function ScheduleDialog(props) {
                 variant="contained"
                 color="secondary"
                 className={classes.button}
-                startIcon={<TodayIcon />}
+                startIcon={<TodayIcon/>}
                 onClick={openDialog}
             >
                 New schedule
@@ -120,7 +115,7 @@ function ScheduleDialog(props) {
                 <DialogContent>
                     <DialogContentText>Add schedule for this week.</DialogContentText>
                     <Container component="main" maxWidth="xs">
-                        <CssBaseline />
+                        <CssBaseline/>
                         <div className={classes.paper}>
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
@@ -129,15 +124,42 @@ function ScheduleDialog(props) {
                                         <Select
                                             labelId="demo-simple-select-outlined-label"
                                             id="demo-simple-select-outlined"
-                                            value={movie.title}
-                                            onChange={handleMovieID}
+                                            value={movie}
+                                            onChange={ (event) =>
+                                                setMovie(event.target.value) }
                                             label="Movie"
                                         >
-                                            {movies.map ( movie =>
-                                                <MenuItem value={movie.id}>{movie.title}</MenuItem>
+                                            {movies.map((movie, idx) =>
+                                                <MenuItem key={idx} value={movie.id}>{movie.title}</MenuItem>
                                             )}
                                         </Select>
                                     </FormControl>
+                                    <FormControl variant="outlined" className={classes.formControl}>
+                                        <InputLabel id="demo-simple-select-outlined-label">Cinema Hall</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-outlined-label"
+                                            id="demo-simple-select-outlined"
+                                            value={cinemaHall}
+                                            onChange= { (event) =>
+                                        setCinemaHall(event.target.value) }
+                                            label="Cinema Hall"
+                                        >
+                                            {cinemaHalls.map((cinemaHall, idx) =>
+                                                <MenuItem key={idx} value={cinemaHall.id}>{cinemaHall.id}</MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        id="datetime-local"
+                                        label="Date of projection"
+                                        className={classes.textField}
+                                        type="datetime-local"
+                                        value={dateOfProjection}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        onChange={event => setDateOfProjection(event.target.value)}
+                                    />
                                 </Grid>
                             </form>
                         </div>
@@ -145,7 +167,7 @@ function ScheduleDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeDialog} color="primary">Cancel</Button>
-                    <Button color="primary">Add</Button>
+                    <Button color="primary" onClick={addScheduledMovie}>Add</Button>
                 </DialogActions>
             </Dialog>
         </div>
