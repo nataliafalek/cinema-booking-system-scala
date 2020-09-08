@@ -10,15 +10,15 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MovieIcon from '@material-ui/icons/Movie';
 import PersonIcon from '@material-ui/icons/Person';
+import TodayIcon from '@material-ui/icons/Today';
 import useStyles from './material-styles/useStyles';
 import Button from '@material-ui/core/Button';
-import HashRouter from "react-router-dom/HashRouter";
-import Route from "react-router-dom/Route";
+import { HashRouter, NavLink, Route } from "react-router-dom";
 import Movies from "./Movies";
-import NavLink from "react-router-dom/NavLink";
 import Profile from "./Profile";
 import LoginUser from "./LoginUser";
-
+import Schedule from "./Schedule";
+import {Divider} from "@material-ui/core";
 export default function AppSkeleton() {
     const classes = useStyles();
 
@@ -38,6 +38,7 @@ export default function AppSkeleton() {
                     <SidebarMenu styles={classes}/>
                     <Route path="/movies" component={Movies}/>
                     <Route path="/profile" component={Profile}/>
+                    <Route path="/schedule" component={Schedule}/>
                 </main>
             </HashRouter>
         </div> :
@@ -79,6 +80,8 @@ function SidebarMenu(props) {
             <div className={props.styles.drawerContainer}>
                 <List>
                     <MenuItem styles={props.styles} name={"MOVIES"} link={"/movies"} icon={<MovieIcon/>} />
+                    <MenuItem styles={props.styles} name={"SCHEDULE"} link={"/schedule"} icon={<TodayIcon/>} />
+                    <Divider/>
                     <MenuItem styles={props.styles} name={"PROFILE"} link={"/profile"} icon={<PersonIcon/>} />
                 </List>
             </div>

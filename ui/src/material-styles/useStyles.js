@@ -85,6 +85,23 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    table: {
+        minWidth: 650,
+    },
+    button: {
+        margin: theme.spacing(1)
+    },
+    formControl: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+    textField: {
+        margin: theme.spacing(3),
+        width: 200,
+    },
 }));
 
 export default useStyles;

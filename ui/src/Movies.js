@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import useStyles from "./material-styles/useStyles";
 import Button from '@material-ui/core/Button';
 import MovieIcon from '@material-ui/icons/Movie';
@@ -11,14 +11,56 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import * as HttpService from './http/HttpService';
 
 export default function Movies() {
     const classes = useStyles();
+    const [movies, setMovies] = React.useState([]);
+
+    useEffect(() => {
+        listAllMovies()
+    }, []);
+
+    const listAllMovies = () => {
+        HttpService.fetchJson('movie/list').then( movies => {
+            setMovies(movies)
+        })
+    }
 
     return (
         <div>
             <MovieDialog styles={classes} />
+            <TableContainer component={Paper}>
+                <Table className={classes.table} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Title</TableCell>
+                            <TableCell align="right">Description</TableCell>
+                            <TableCell align="right">Duration (seconds)</TableCell>
+                            <TableCell align="right">Image URL</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {movies.map((row, idx) => (
+                            <TableRow key={`${row.title}-${idx}`}>
+                                <TableCell component="th" scope="row">
+                                    {row.title}
+                                </TableCell>
+                                <TableCell align="right">{row.description}</TableCell>
+                                <TableCell align="right">{row.durationInSeconds}</TableCell>
+                                <TableCell align="right">{row.imageUrl}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     )
 }
