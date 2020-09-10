@@ -1,5 +1,5 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
-case class ScheduledMovie(movieId: Long, dateOfProjection: LocalDateTime, cinemaHallId: Long)
+case class ScheduledMovie(movieId: Long, dateOfProjection: ZonedDateTime, cinemaHallId: Long)
