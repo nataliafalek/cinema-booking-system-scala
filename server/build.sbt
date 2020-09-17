@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion,
   "com.typesafe.slick" %% "slick" % SlickVersion,
-  "org.slf4j" % "slf4j-nop" % "1.7.30",
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.slick" %% "slick-hikaricp" % SlickVersion,
   "org.postgresql" % "postgresql" % "42.2.16",
   "ch.megard" %% "akka-http-cors" % "1.1.0"

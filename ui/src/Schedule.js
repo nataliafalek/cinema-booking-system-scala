@@ -18,7 +18,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import {Calendar, momentLocalizer} from "react-big-calendar";
-import _ from 'lodash';
 import TextField from '@material-ui/core/TextField';
 
 export default function Schedule() {
@@ -30,21 +29,21 @@ export default function Schedule() {
     }, []);
 
     const listAllScheduledMovies = () => {
-        HttpService.fetchJson('schedule/movie/list').then( movies => {
-            const formattedMovies = movies.map(movie =>
-            { return {
-                title: movie.title,
-                start: moment(movie.start).toDate(),
-                end:  moment(movie.end).toDate()
+        HttpService.fetchJson('schedule/movie/list').then(movies => {
+            const formattedMovies = movies.map(movie => {
+                return {
+                    title: movie.title,
+                    start: moment(movie.start).toDate(),
+                    end: moment(movie.end).toDate()
                 }
             })
             setScheduledMovies(formattedMovies)
         })
     }
-    return(
+    return (
         <div>
-            <ScheduleDialog refreshScheduledMovies={ listAllScheduledMovies } />
-            { !_.isEmpty(scheduledMovies)  ? <Calendar
+            <ScheduleDialog refreshScheduledMovies={listAllScheduledMovies}/>
+            <Calendar
                 min={moment().hours(10).minutes(0).seconds(0).milliseconds(0).toDate()}
                 defaultView={'week'}
                 views={['week']}
@@ -52,8 +51,8 @@ export default function Schedule() {
                 events={scheduledMovies}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 700 }}
-            /> : null }
+                style={{height: 700}}
+            />
         </div>
 
     )
@@ -95,8 +94,18 @@ function ScheduleDialog(props) {
     }
 
     const addScheduledMovie = () => {
-        closeDialog()
-        props.refreshScheduledMovies()
+        const newScheduledMovie = {
+            movieId: movie.id,
+            dateOfProjection: moment.utc(dateOfProjection).format("YYYY-MM-DDTHH:mm:ssZ"),
+            cinemaHallId: cinemaHall.id
+        }
+        HttpService.postJson('schedule/movie/add', newScheduledMovie)
+            .then(result => {
+                if (result.status === 200) {
+                    closeDialog()
+                    props.refreshScheduledMovies()
+                }
+            })
     }
 
     return (
@@ -125,12 +134,12 @@ function ScheduleDialog(props) {
                                             labelId="demo-simple-select-outlined-label"
                                             id="demo-simple-select-outlined"
                                             value={movie}
-                                            onChange={ (event) =>
-                                                setMovie(event.target.value) }
+                                            onChange={(event) =>
+                                                setMovie(event.target.value)}
                                             label="Movie"
                                         >
                                             {movies.map((movie, idx) =>
-                                                <MenuItem key={idx} value={movie.id}>{movie.title}</MenuItem>
+                                                <MenuItem key={idx} value={movie}>{movie.title}</MenuItem>
                                             )}
                                         </Select>
                                     </FormControl>
@@ -140,12 +149,12 @@ function ScheduleDialog(props) {
                                             labelId="demo-simple-select-outlined-label"
                                             id="demo-simple-select-outlined"
                                             value={cinemaHall}
-                                            onChange= { (event) =>
-                                        setCinemaHall(event.target.value) }
+                                            onChange={(event) =>
+                                                setCinemaHall(event.target.value)}
                                             label="Cinema Hall"
                                         >
                                             {cinemaHalls.map((cinemaHall, idx) =>
-                                                <MenuItem key={idx} value={cinemaHall.id}>{cinemaHall.id}</MenuItem>
+                                                <MenuItem key={idx} value={cinemaHall}>{cinemaHall.id}</MenuItem>
                                             )}
                                         </Select>
                                     </FormControl>

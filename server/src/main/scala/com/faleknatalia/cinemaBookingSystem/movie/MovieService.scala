@@ -11,6 +11,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext) {
 
   private lazy val movies = TableQuery[MovieTable]
+  private lazy val scheduledMovies = TableQuery[ScheduledMovieTable]
+
+  def movieSchemaCreate() = {
+    val ddl = movies.schema ++ scheduledMovies.schema
+    db.run(ddl create)
+  }
 
   def addNewMovie(movieForm: AddMovie): Future[Unit] = {
     val movie = Movie(
@@ -22,9 +28,14 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
     db.run(addMovie).map(_ => ())
   }
 
+  def addNewScheduledMovie(scheduledMovie: ScheduledMovie): Future[Unit] = {
+    val addScheduledMovie = scheduledMovies += scheduledMovie
+    db.run(addScheduledMovie).map(_ => ())
+  }
+
   def findAllMovies(): Future[Seq[Movie]] = db.run(movies.result)
 
-  def findAllScheduledMovies(scheduledMovies: TableQuery[ScheduledMovieTable]): Future[Seq[ScheduledMovieDto]] = {
+  def findAllScheduledMovies(): Future[Seq[ScheduledMovieDto]] = {
     val allScheduledMoviesQuery = scheduledMovies.join(movies).on(_.movieId === _.id)
     db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
       scheduledMovies.map { case (scheduledMovie, movie) =>

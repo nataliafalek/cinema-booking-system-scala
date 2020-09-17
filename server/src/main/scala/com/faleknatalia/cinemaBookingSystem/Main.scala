@@ -9,7 +9,6 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallGenerator
 import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
 import slick.jdbc.JdbcBackend.Database
-import slick.lifted.TableQuery
 
 import scala.io.StdIn
 
@@ -22,7 +21,8 @@ object Main extends JsonSupport {
     implicit val executionContext = system.executionContext
     val db = Database.forConfig("db")
     val movieService = new MovieService(db)(executionContext)
-    val scheduledMovies = TableQuery[ScheduledMovieTable]
+
+    movieService.movieSchemaCreate()
 
     val route = {
       cors() {
@@ -42,7 +42,17 @@ object Main extends JsonSupport {
           }
         } ~ path("schedule" / "movie" / "list") {
           get {
-            complete(movieService.findAllScheduledMovies(scheduledMovies))
+            complete(movieService.findAllScheduledMovies())
+          }
+        } ~ path("schedule" / "movie" / "add") {
+          post {
+            entity(as[ScheduledMovie]) { scheduledMovie =>
+              complete {
+                movieService.addNewScheduledMovie(scheduledMovie).map { _ =>
+                  StatusCodes.OK
+                }
+              }
+            }
           }
         } ~ path("cinemahall" / "list") {
           get {

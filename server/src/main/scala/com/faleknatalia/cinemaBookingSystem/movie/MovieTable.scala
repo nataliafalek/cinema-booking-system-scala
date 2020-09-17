@@ -13,5 +13,5 @@ class MovieTable(tag: Tag) extends Table[Movie](tag, "movie") {
   def description = column[String]("description")
   def durationInSeconds = column[Long]("duration_in_seconds")
   def imageUrl = column[URI]("image_url")
-  def * = (id, title, description, durationInSeconds, imageUrl).mapTo[Movie]
+  def * = (title, description, durationInSeconds, imageUrl, id).mapTo[Movie]
 }
