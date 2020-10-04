@@ -13,7 +13,7 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
   private lazy val movies = TableQuery[MovieTable]
   private lazy val scheduledMovies = TableQuery[ScheduledMovieTable]
 
-  def movieSchemaCreate() = {
+  def movieSchemaCreate(): Future[Unit] = {
     val ddl = movies.schema ++ scheduledMovies.schema
     db.run(ddl create)
   }

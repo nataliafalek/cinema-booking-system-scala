@@ -9,7 +9,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import DialogActions from "@material-ui/core/DialogActions";
 import InputLabel from '@material-ui/core/InputLabel';
@@ -124,10 +123,10 @@ function ScheduleDialog(props) {
                 <DialogContent>
                     <DialogContentText>Add schedule for this week.</DialogContentText>
                     <Container component="main" maxWidth="xs">
-                        <CssBaseline/>
                         <div className={classes.paper}>
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
+                                    <Grid item xs={12}>
                                     <FormControl variant="outlined" className={classes.formControl}>
                                         <InputLabel id="demo-simple-select-outlined-label">Movie</InputLabel>
                                         <Select
@@ -143,6 +142,8 @@ function ScheduleDialog(props) {
                                             )}
                                         </Select>
                                     </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
                                     <FormControl variant="outlined" className={classes.formControl}>
                                         <InputLabel id="demo-simple-select-outlined-label">Cinema Hall</InputLabel>
                                         <Select
@@ -158,6 +159,8 @@ function ScheduleDialog(props) {
                                             )}
                                         </Select>
                                     </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
                                     <TextField
                                         id="datetime-local"
                                         label="Date of projection"
@@ -169,6 +172,7 @@ function ScheduleDialog(props) {
                                         }}
                                         onChange={event => setDateOfProjection(event.target.value)}
                                     />
+                                    </Grid>
                                 </Grid>
                             </form>
                         </div>

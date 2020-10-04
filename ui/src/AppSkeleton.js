@@ -36,9 +36,9 @@ export default function AppSkeleton() {
                 <main className={classes.content}>
                     <Toolbar/>
                     <SidebarMenu styles={classes}/>
-                    <Route path="/movies" component={Movies}/>
-                    <Route path="/profile" component={Profile}/>
-                    <Route path="/schedule" component={Schedule}/>
+                    <Route path="/bo/movies" component={Movies}/>
+                    <Route path="/bo/profile" component={Profile}/>
+                    <Route path="/bo/schedule" component={Schedule}/>
                 </main>
             </HashRouter>
         </div> :
@@ -79,10 +79,10 @@ function SidebarMenu(props) {
             <Toolbar/>
             <div className={props.styles.drawerContainer}>
                 <List>
-                    <MenuItem styles={props.styles} name={"MOVIES"} link={"/movies"} icon={<MovieIcon/>} />
-                    <MenuItem styles={props.styles} name={"SCHEDULE"} link={"/schedule"} icon={<TodayIcon/>} />
+                    <MenuItem styles={props.styles} name={"MOVIES"} link={"/bo/movies"} icon={<MovieIcon/>} />
+                    <MenuItem styles={props.styles} name={"SCHEDULE"} link={"/bo/schedule"} icon={<TodayIcon/>} />
                     <Divider/>
-                    <MenuItem styles={props.styles} name={"PROFILE"} link={"/profile"} icon={<PersonIcon/>} />
+                    <MenuItem styles={props.styles} name={"PROFILE"} link={"/bo/profile"} icon={<PersonIcon/>} />
                 </List>
             </div>
         </Drawer>

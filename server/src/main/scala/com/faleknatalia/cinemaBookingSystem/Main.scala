@@ -6,7 +6,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
-import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallGenerator
+import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallService
 import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
 import slick.jdbc.JdbcBackend.Database
 
@@ -21,8 +21,12 @@ object Main extends JsonSupport {
     implicit val executionContext = system.executionContext
     val db = Database.forConfig("db")
     val movieService = new MovieService(db)(executionContext)
+    val cinemaHallService = new CinemaHallService(db)(executionContext)
 
     movieService.movieSchemaCreate()
+    cinemaHallService.cinemaHallSchemaCreate()
+    cinemaHallService.saveCinemaHalls()
+    cinemaHallService.saveSeats()
 
     val route = {
       cors() {
@@ -56,7 +60,11 @@ object Main extends JsonSupport {
           }
         } ~ path("cinemahall" / "list") {
           get {
-            complete(CinemaHallGenerator.generateCinemaHalls())
+            complete(cinemaHallService.findAllCinemaHalls())
+          }
+        } ~ path("cinemahall" / "seats" / "list") {
+          get {
+            complete(cinemaHallService.findAllCinemaHallsWithSeats())
           }
         }
       }

@@ -5,9 +5,9 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.faleknatalia.cinemaBookingSystem.cinemahall.{CinemaHall, Seat}
+import com.faleknatalia.cinemaBookingSystem.cinemahall.{CinemaHall, CinemaHallWithSeats, Seat}
 import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, Movie, ScheduledMovie, ScheduledMovieDto}
-import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat}
+import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val ZonedDateTimeFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
@@ -19,10 +19,11 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     override def write(obj: URI): JsValue = JsString(obj.toString)
   }
 
-  implicit val scheduledMovieFormat = jsonFormat3(ScheduledMovie)
-  implicit val addMovieFormat = jsonFormat4(AddMovie)
-  implicit val movieFormat = jsonFormat5(Movie)
-  implicit val ScheduledMovieDtoFormat = jsonFormat3(ScheduledMovieDto)
-  implicit val SeatFormat = jsonFormat4(Seat)
-  implicit val CinemaHallFormat = jsonFormat2(CinemaHall)
+  implicit val scheduledMovieFormat: RootJsonFormat[ScheduledMovie] = jsonFormat3(ScheduledMovie)
+  implicit val addMovieFormat: RootJsonFormat[AddMovie] = jsonFormat4(AddMovie)
+  implicit val movieFormat: RootJsonFormat[Movie] = jsonFormat5(Movie)
+  implicit val ScheduledMovieDtoFormat: RootJsonFormat[ScheduledMovieDto] = jsonFormat3(ScheduledMovieDto)
+  implicit val SeatFormat: RootJsonFormat[Seat] = jsonFormat4(Seat)
+  implicit val CinemaHallFormat: RootJsonFormat[CinemaHall] = jsonFormat2(CinemaHall)
+  implicit val CinemaHallWithSeatsFormat: RootJsonFormat[CinemaHallWithSeats] = jsonFormat2(CinemaHallWithSeats)
 }

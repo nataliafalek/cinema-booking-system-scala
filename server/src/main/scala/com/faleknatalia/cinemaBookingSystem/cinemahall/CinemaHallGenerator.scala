@@ -1,7 +1,11 @@
 package com.faleknatalia.cinemaBookingSystem.cinemahall
 
 object CinemaHallGenerator {
-  def generateCinemaHalls(): List[CinemaHall] = {
-    List(CinemaHall(1, List.empty), CinemaHall(2, List.empty))
+  def generateSeats(numberOfRows: Int, numberOfColumns: Int, cinemaHallId: Long): List[Seat] = {
+    (0 to numberOfRows).flatMap { row =>
+      (0 to numberOfColumns).map { column =>
+        Seat(row, row, column, cinemaHallId)
+      }
+    }.toList
   }
 }

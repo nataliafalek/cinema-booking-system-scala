@@ -1,3 +1,3 @@
 package com.faleknatalia.cinemaBookingSystem.cinemahall
 
-case class Seat(id: Long, seatNumber: Int, rowNumber: Int, columnNumber: Int)
+case class Seat(seatNumber: Int, rowNumber: Int, columnNumber: Int, cinemaHallId: Long)
