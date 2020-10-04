@@ -8,12 +8,8 @@ import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallGenerator
 import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
-import slick.jdbc
 import slick.jdbc.JdbcBackend.Database
-import slick.jdbc.PostgresProfile.api._
-import slick.lifted.TableQuery
 
-import scala.concurrent.Future
 import scala.io.StdIn
 
 object Main extends JsonSupport {
@@ -23,10 +19,10 @@ object Main extends JsonSupport {
     implicit val system = ActorSystem(Behaviors.empty, "my-system")
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.executionContext
-    val movieService = new MovieService()
     val db = Database.forConfig("db")
-    val movies = TableQuery[MovieTable]
-    val scheduledMovies = TableQuery[ScheduledMovieTable]
+    val movieService = new MovieService(db)(executionContext)
+
+    movieService.movieSchemaCreate()
 
     val route = {
       cors() {
@@ -34,7 +30,7 @@ object Main extends JsonSupport {
           post {
             entity(as[AddMovie]) { movieForm =>
               complete {
-                movieService.addNewMovie(db, movieForm, movies).map { _ =>
+                movieService.addNewMovie(movieForm).map { _ =>
                   StatusCodes.OK
                 }
               }
@@ -42,11 +38,21 @@ object Main extends JsonSupport {
           }
         } ~ path("movie" / "list") {
           get {
-            complete(movieService.findAllMovies(db, movies))
+            complete(movieService.findAllMovies())
           }
         } ~ path("schedule" / "movie" / "list") {
           get {
-            complete(movieService.findAllScheduledMovies(db, scheduledMovies, movies))
+            complete(movieService.findAllScheduledMovies())
+          }
+        } ~ path("schedule" / "movie" / "add") {
+          post {
+            entity(as[ScheduledMovie]) { scheduledMovie =>
+              complete {
+                movieService.addNewScheduledMovie(scheduledMovie).map { _ =>
+                  StatusCodes.OK
+                }
+              }
+            }
           }
         } ~ path("cinemahall" / "list") {
           get {

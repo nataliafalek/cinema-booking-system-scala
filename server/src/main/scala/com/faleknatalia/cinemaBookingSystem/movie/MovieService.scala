@@ -1,34 +1,47 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
+import java.net.URI
+
 import slick.jdbc
-import slick.jdbc.JdbcBackend
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.TableQuery
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MovieService() {
+class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext) {
 
-   def addNewMovie(db: jdbc.JdbcBackend.Database, movieForm: AddMovie, movies: TableQuery[MovieTable])(implicit ec: ExecutionContext) : Future[Unit] = {
-     val movie = Movie(
-       title = movieForm.title,
-       description = movieForm.description,
-       durationInSeconds = movieForm.durationInSeconds,
-       imageUrl = movieForm.imageUrl)
-     db.run(movies += movie).map( _ => ())
+  private lazy val movies = TableQuery[MovieTable]
+  private lazy val scheduledMovies = TableQuery[ScheduledMovieTable]
+
+  def movieSchemaCreate() = {
+    val ddl = movies.schema ++ scheduledMovies.schema
+    db.run(ddl create)
   }
 
-  def findAllMovies(db: JdbcBackend.Database, movies: TableQuery[MovieTable])
-                           (implicit ec: ExecutionContext): Future[Seq[Movie]] = {
-    db.run(movies.map(movie =>
-      (movie.id, movie.title, movie.description, movie.durationInSeconds, movie.imageUrl).mapTo[Movie]).result)
+  def addNewMovie(movieForm: AddMovie): Future[Unit] = {
+    val movie = Movie(
+      title = movieForm.title,
+      description = movieForm.description,
+      durationInSeconds = movieForm.durationInSeconds,
+      imageUrl = URI.create(movieForm.imageUrl))
+    val addMovie = movies += movie
+    db.run(addMovie).map(_ => ())
   }
 
-  def findAllScheduledMovies(db: JdbcBackend.Database, scheduledMovies: TableQuery[ScheduledMovieTable], movies: TableQuery[MovieTable])
-                                    (implicit ec: ExecutionContext): Future[Seq[ScheduledMovieDto]] = {
-    val allScheduledMoviesQuery = for {
-      (s, m) <- scheduledMovies.join(movies).on(_.movieId === _.id)
-    } yield (m.title, s.dateOfProjection, m.durationInSeconds)
-    db.run(allScheduledMoviesQuery.result).map(_.map { case (title, start, duration) => ScheduledMovieDto(title, start, start.plusSeconds(duration)) })
+  def addNewScheduledMovie(scheduledMovie: ScheduledMovie): Future[Unit] = {
+    val addScheduledMovie = scheduledMovies += scheduledMovie
+    db.run(addScheduledMovie).map(_ => ())
+  }
+
+  def findAllMovies(): Future[Seq[Movie]] = db.run(movies.result)
+
+  def findAllScheduledMovies(): Future[Seq[ScheduledMovieDto]] = {
+    val allScheduledMoviesQuery = scheduledMovies.join(movies).on(_.movieId === _.id)
+    db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
+      scheduledMovies.map { case (scheduledMovie, movie) =>
+        val start = scheduledMovie.dateOfProjection
+        ScheduledMovieDto(movie.title, start, start.plusSeconds(movie.durationInSeconds))
+      }
+    }
   }
 }

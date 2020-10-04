@@ -19,6 +19,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import * as HttpService from './http/HttpService';
+import _ from 'lodash';
 
 export default function Movies() {
     const classes = useStyles();
@@ -36,7 +37,7 @@ export default function Movies() {
 
     return (
         <div>
-            <MovieDialog styles={classes} />
+            <MovieDialog styles={classes} refreshMoviesData={listAllMovies} />
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
@@ -85,12 +86,13 @@ function MovieDialog(props) {
             title: title,
             description: description,
             imageUrl: imageUrl,
-            durationInSeconds: duration
+            durationInSeconds: _.toNumber(duration)
         }
         HttpService.postJson('movie/add', newMovie)
             .then(result => {
                 if (result.status === 200) {
                     closeDialog()
+                    props.refreshMoviesData()
                 }
             })
     }
