@@ -1,15 +1,30 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
+const backgroundProperties = {
+    height: 600,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex'
     },
+    cinemaRoot: {
+        background: 'black'
+    },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
         color: 'white',
-        background: 'rgba(0, 0, 0, 0.87)'
+        background: 'black'
+    },
+    toolBar: {
+        background: 'black'
+    },
+    menuBar: {
+        float: 'left'
     },
     spanRedColor: {
         color: '#ff3366'
@@ -21,11 +36,6 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {
         width: drawerWidth,
         background: 'rgba(0, 0, 0, 0.87)',
-        // backgroundImage: "url('./drawer4.jpg')",
-        // backgroundRepeat: "no-repeat",
-        // backgroundPosition: "top",
-        // backgroundSize: "cover",
-        // backgroundAttachment: "fixed",
         height: "100%"
     },
     drawerContainer: {
@@ -102,6 +112,63 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3),
         width: 200,
     },
+    movieList: {
+        marginTop: theme.spacing(5),
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        overflow: 'hidden',
+        backgroundColor: theme.palette.background.paper,
+    },
+    gridList: {
+        flexWrap: 'nowrap',
+        transform: 'translateZ(0)',
+    },
+    movieTitle: {
+        color: '#ff3366',
+        fontWeight: "bold"
+},
+    titleBar: {
+        background: '#ff3366'
+    },
+    icon: {
+        color: 'rgba(255, 255, 255, 0.54)',
+    },
+    movieCarousel: {
+        marginTop: theme.spacing(5)
+    },
+    petlaImage: {
+        height: 600,
+        backgroundImage: "url('./petla.jpg')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    },
+    badboyImage: {
+        height: 600,
+        backgroundImage: "url('./badboy.jpg')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'top',
+    },
+    movieCarouselHeader: {
+        fontSize: 60,
+        position: "absolute",
+        bottom: 70,
+        right: 200,
+        color: '#ff3366'
+    },
+    paprykRoot: {
+        maxWidth: 345,
+    },
+    media: {
+        height: 140,
+    },
+    whoIsPapryk: {
+        width: "50%",
+        height: "50%",
+       position: "center"
+    }
 }));
 
 export default useStyles;

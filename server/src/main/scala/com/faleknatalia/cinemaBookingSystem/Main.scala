@@ -58,6 +58,10 @@ object Main extends JsonSupport {
               }
             }
           }
+        }  ~ path("schedule" / "list") {
+          get {
+            complete(movieService.findAllMoviesByDayOfTheWeek())
+          }
         } ~ path("cinemahall" / "list") {
           get {
             complete(cinemaHallService.findAllCinemaHalls())

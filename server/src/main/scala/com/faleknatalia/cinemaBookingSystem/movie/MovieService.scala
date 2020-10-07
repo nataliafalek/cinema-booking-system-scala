@@ -1,6 +1,7 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
 import java.net.URI
+import java.time.ZonedDateTime
 
 import slick.jdbc
 import slick.jdbc.PostgresProfile.api._
@@ -35,13 +36,26 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
 
   def findAllMovies(): Future[Seq[Movie]] = db.run(movies.result)
 
+
+  def findAllMoviesByDayOfTheWeek(): Future[Map[String, Seq[ScheduledMovieDto]]] = {
+    val allScheduledMoviesQuery = scheduledMovies.filter(movie =>
+      movie.dateOfProjection.between(ZonedDateTime.now(), ZonedDateTime.now().plusDays(7))).join(movies).on(_.movieId === _.id)
+    db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
+      toScheduledMovieDto(scheduledMovies).groupBy(scheduledMovie => scheduledMovie.start.getDayOfWeek.name())
+    }
+  }
+
   def findAllScheduledMovies(): Future[Seq[ScheduledMovieDto]] = {
     val allScheduledMoviesQuery = scheduledMovies.join(movies).on(_.movieId === _.id)
     db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
-      scheduledMovies.map { case (scheduledMovie, movie) =>
-        val start = scheduledMovie.dateOfProjection
-        ScheduledMovieDto(movie.title, start, start.plusSeconds(movie.durationInSeconds))
-      }
+      toScheduledMovieDto(scheduledMovies)
+    }
+  }
+
+  private def toScheduledMovieDto(scheduledMovies: Seq[(ScheduledMovie, Movie)]) = {
+    scheduledMovies.map { case (scheduledMovie, movie) =>
+      val start = scheduledMovie.dateOfProjection
+      ScheduledMovieDto(movie.id, movie.title, start, start.plusSeconds(movie.durationInSeconds))
     }
   }
 }

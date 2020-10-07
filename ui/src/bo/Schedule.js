@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import moment from 'moment';
-import useStyles from "./material-styles/useStyles";
+import useStyles from "../material-styles/useStyles";
 import Button from "@material-ui/core/Button";
 import TodayIcon from "@material-ui/icons/Today";
-import * as HttpService from "./http/HttpService";
+import * as HttpService from "../http/HttpService";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";

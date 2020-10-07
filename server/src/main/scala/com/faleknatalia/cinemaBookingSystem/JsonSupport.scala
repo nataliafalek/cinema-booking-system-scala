@@ -22,7 +22,7 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val scheduledMovieFormat: RootJsonFormat[ScheduledMovie] = jsonFormat3(ScheduledMovie)
   implicit val addMovieFormat: RootJsonFormat[AddMovie] = jsonFormat4(AddMovie)
   implicit val movieFormat: RootJsonFormat[Movie] = jsonFormat5(Movie)
-  implicit val ScheduledMovieDtoFormat: RootJsonFormat[ScheduledMovieDto] = jsonFormat3(ScheduledMovieDto)
+  implicit val ScheduledMovieDtoFormat: RootJsonFormat[ScheduledMovieDto] = jsonFormat4(ScheduledMovieDto)
   implicit val SeatFormat: RootJsonFormat[Seat] = jsonFormat4(Seat)
   implicit val CinemaHallFormat: RootJsonFormat[CinemaHall] = jsonFormat2(CinemaHall)
   implicit val CinemaHallWithSeatsFormat: RootJsonFormat[CinemaHallWithSeats] = jsonFormat2(CinemaHallWithSeats)

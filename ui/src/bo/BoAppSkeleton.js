@@ -1,25 +1,24 @@
 import React from 'react';
 import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MovieIcon from '@material-ui/icons/Movie';
 import PersonIcon from '@material-ui/icons/Person';
 import TodayIcon from '@material-ui/icons/Today';
-import useStyles from './material-styles/useStyles';
-import Button from '@material-ui/core/Button';
-import { HashRouter, NavLink, Route } from "react-router-dom";
+import useStyles from '../material-styles/useStyles';
+import {HashRouter, NavLink, Route} from "react-router-dom";
 import Movies from "./Movies";
 import Profile from "./Profile";
 import LoginUser from "./LoginUser";
 import Schedule from "./Schedule";
 import {Divider} from "@material-ui/core";
-export default function AppSkeleton() {
+import AppBarTop from "../common/AppBarTop";
+
+export default function BoAppSkeleton() {
     const classes = useStyles();
 
     const isLogged = () => {
@@ -30,38 +29,23 @@ export default function AppSkeleton() {
     }
     return (
         isLogged() ? <div className={classes.root}>
-            <CssBaseline/>
-            <AppBarTop styles={classes}/>
-            <HashRouter>
-                <main className={classes.content}>
-                    <Toolbar/>
-                    <SidebarMenu styles={classes}/>
-                    <Route path="/bo/movies" component={Movies}/>
-                    <Route path="/bo/profile" component={Profile}/>
-                    <Route path="/bo/schedule" component={Schedule}/>
-                </main>
-            </HashRouter>
-        </div> :
+                <CssBaseline/>
+                <AppBarTop/>
+                <HashRouter>
+                    <main className={classes.content}>
+                        <Toolbar/>
+                        <SidebarMenu styles={classes}/>
+                        <Route path="/bo/movies" component={Movies}/>
+                        <Route path="/bo/profile" component={Profile}/>
+                        <Route path="/bo/schedule" component={Schedule}/>
+                    </main>
+                </HashRouter>
+            </div> :
             <HashRouter>
                 <CssBaseline/>
-                    <Route path="/" component={LoginUser}/>
+                <Route path="/" component={LoginUser}/>
             </HashRouter>
     );
-}
-
-function AppBarTop(props) {
-    return(
-        <AppBar position="fixed" className={props.styles.appBar}>
-            <Toolbar>
-                <Typography variant="h6" className={props.styles.title}>
-                    NatiCinemaBO
-                </Typography>
-                <Button color="inherit">
-                    <span className={props.styles.spanRedColor}>Log out</span>
-                </Button>
-            </Toolbar>
-        </AppBar>
-    )
 }
 
 function MenuItem(props) {

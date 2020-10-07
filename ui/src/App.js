@@ -1,16 +1,19 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {useLocation} from "react-router-dom";
 import './App.css';
-import AppSkeleton from './AppSkeleton'
+import BoAppSkeleton from './bo/BoAppSkeleton'
+import CinemaAppSkeleton from "./cinema/CinemaAppSkeleton";
 
-class App extends Component {
-    render() {
-        return (
-            <div className="App">
-                <AppSkeleton/>
-            </div>
-        );
-    }
-
+function App () {
+    const location = useLocation()
+    return (
+        <div className="App">
+            { location.hash.includes("#/bo") ?
+                <BoAppSkeleton/> :
+                <CinemaAppSkeleton/>
+            }
+        </div>
+    );
 }
 
 export default App;

@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
-import useStyles from "./material-styles/useStyles";
+import useStyles from "../material-styles/useStyles";
 import Button from '@material-ui/core/Button';
 import MovieIcon from '@material-ui/icons/Movie';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import FormItem from './common/FormItem'
+import FormItem from '../common/FormItem'
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
@@ -18,7 +18,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import * as HttpService from './http/HttpService';
+import * as HttpService from '../http/HttpService';
 import _ from 'lodash';
 
 export default function Movies() {
