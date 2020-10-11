@@ -1,12 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
-const backgroundProperties = {
-    height: 600,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-}
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -168,6 +162,17 @@ const useStyles = makeStyles((theme) => ({
         width: "50%",
         height: "50%",
        position: "center"
+    },
+    whatsOn: {
+        marginTop: theme.spacing(10),
+        color: "white"
+    },
+    whatsOnTabs: {
+            backgroundColor: theme.palette.background.paper,
+    },
+    movieCardContent: {
+        width: 400,
+        margin: theme.spacing(3),
     }
 }));
 

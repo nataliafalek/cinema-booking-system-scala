@@ -1,11 +1,9 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import useStyles from '../material-styles/useStyles';
 import Button from '@material-ui/core/Button';
-import {HashRouter} from "react-router-dom";
 
 export default function AppBarTop() {
     const classes = useStyles();
