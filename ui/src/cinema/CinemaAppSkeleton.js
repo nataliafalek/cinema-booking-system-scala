@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import WhoIsPapryk from "./WhoIsPapryk";
 import WhatsOn from "./whatsOn/WhatsOn";
+import Checkout from "./checkout/Checkout";
 
 export default function CinemaAppSkeleton() {
     const classes = useStyles();
@@ -35,6 +36,7 @@ export default function CinemaAppSkeleton() {
                         <Route exact path="/" component={Content}/>
                         <Route exact path="/cinema/papryk" component={WhoIsPapryk}/>
                         <Route exact path="/cinema/whatsOn" component={WhatsOn}/>
+                        <Route exact path="/cinema/checkout" component={Checkout}/>
                     </div>
                 </HashRouter>
             </div>

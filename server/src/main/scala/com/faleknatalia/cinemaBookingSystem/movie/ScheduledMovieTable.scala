@@ -7,10 +7,9 @@ import slick.lifted.Tag
 
 class ScheduledMovieTable(tag: Tag) extends Table[ScheduledMovie](tag, "scheduled_movie") {
   def movieId = column[Long]("movie_id")
-
   def dateOfProjection = column[ZonedDateTime]("date_of_projection")
-
   def cinemaHallId = column[Long]("cinema_hall_id")
+  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
-  def * = (movieId, dateOfProjection, cinemaHallId).mapTo[ScheduledMovie]
+  def * = (movieId, dateOfProjection, cinemaHallId, id).mapTo[ScheduledMovie]
 }

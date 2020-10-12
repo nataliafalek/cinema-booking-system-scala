@@ -6,7 +6,7 @@ version := "1.0"
 
 val AkkaVersion = "2.6.8"
 val AkkaHttpVersion = "10.2.0"
-val SlickVersion = "3.3.2"
+val SlickVersion = "3.3.3"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
@@ -17,5 +17,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.slick" %% "slick-hikaricp" % SlickVersion,
   "org.postgresql" % "postgresql" % "42.2.16",
-  "ch.megard" %% "akka-http-cors" % "1.1.0"
+  "ch.megard" %% "akka-http-cors" % "1.1.0",
+  "com.softwaremill.akka-http-session" %% "core" % "0.5.11"
 )

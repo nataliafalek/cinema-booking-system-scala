@@ -173,6 +173,61 @@ const useStyles = makeStyles((theme) => ({
     movieCardContent: {
         width: 400,
         margin: theme.spacing(3),
+    },
+    checkoutAppBar: {
+        position: 'relative',
+    },
+    checkoutLayout: {
+        width: 'auto',
+        height: 1000,
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
+            width: 1000,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+        },
+    },
+    checkoutPaper: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+        padding: theme.spacing(2),
+        height: 800,
+        [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
+            marginTop: theme.spacing(6),
+            marginBottom: theme.spacing(6),
+            padding: theme.spacing(3),
+        },
+    },
+    checkoutStepper: {
+        padding: theme.spacing(3, 0, 5),
+    },
+    checkoutButtons: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+    checkoutButton: {
+        marginTop: theme.spacing(3),
+        marginLeft: theme.spacing(1),
+    },
+    cinemaHallRow: {
+        float: "left"
+    },
+    cinemaHallSeatReserved: {
+        width: 40,
+        height: 40,
+        background: "red",
+        margin: 3
+    },
+    cinemaHallSeatFree: {
+        width: 40,
+        height: 40,
+        background: "green",
+        margin: 3
+    },
+    cinemaHall: {
+        float: "left"
+
     }
 }));
 

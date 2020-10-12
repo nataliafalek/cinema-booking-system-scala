@@ -6,10 +6,14 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import com.faleknatalia.cinemaBookingSystem.checkout.CheckoutService
 import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallService
+import com.faleknatalia.cinemaBookingSystem.dbutils.{DatabaseUtils, Tables}
 import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
 import slick.jdbc.JdbcBackend.Database
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.io.StdIn
 
 object Main extends JsonSupport {
@@ -22,11 +26,16 @@ object Main extends JsonSupport {
     val db = Database.forConfig("db")
     val movieService = new MovieService(db)(executionContext)
     val cinemaHallService = new CinemaHallService(db)(executionContext)
+    val checkoutService = new CheckoutService(db)(executionContext)
+    val dbUtils = new DatabaseUtils(db)(executionContext)
 
-    movieService.movieSchemaCreate()
-    cinemaHallService.cinemaHallSchemaCreate()
-    cinemaHallService.saveCinemaHalls()
-    cinemaHallService.saveSeats()
+    val bootstrapDB = for {
+      _ <- dbUtils.schemaCreate(Tables.allTablesSchema())
+      _ <- cinemaHallService.saveCinemaHalls()
+      _ <- cinemaHallService.saveSeats()
+      _ <- checkoutService.saveTicketData()
+    } yield ()
+    Await.result(bootstrapDB, 30.seconds)
 
     val route = {
       cors() {
@@ -50,7 +59,7 @@ object Main extends JsonSupport {
           }
         } ~ path("schedule" / "movie" / "add") {
           post {
-            entity(as[ScheduledMovie]) { scheduledMovie =>
+            entity(as[AddScheduledMovieDto]) { scheduledMovie =>
               complete {
                 movieService.addNewScheduledMovie(scheduledMovie).map { _ =>
                   StatusCodes.OK
@@ -69,6 +78,14 @@ object Main extends JsonSupport {
         } ~ path("cinemahall" / "seats" / "list") {
           get {
             complete(cinemaHallService.findAllCinemaHallsWithSeats())
+          }
+        } ~ pathPrefix("cinemahall"/ "list" / LongNumber) { scheduledMovieId =>
+          get  {
+            complete(cinemaHallService.findCinemaHallByMovieId(scheduledMovieId))
+          }
+        } ~ path("ticket" / "prices" / "list") {
+          get {
+            complete(checkoutService.listTicketPrices())
           }
         }
       }

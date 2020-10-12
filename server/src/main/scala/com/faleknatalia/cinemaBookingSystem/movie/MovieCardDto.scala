@@ -1,3 +1,3 @@
 package com.faleknatalia.cinemaBookingSystem.movie
 
-case class MovieCardDto(title: String, id: Long, startHours: Seq[String], imageUrl: String)
+case class MovieCardDto(title: String, id: Long, scheduledMovieIdWithStartTime: Seq[(Long, String)], imageUrl: String)

@@ -5,8 +5,9 @@ import java.time.{DayOfWeek, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import com.faleknatalia.cinemaBookingSystem.checkout.TicketPrice
 import com.faleknatalia.cinemaBookingSystem.cinemahall.{CinemaHall, CinemaHallWithSeats, Seat}
-import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, Movie, MovieCardDto, ScheduledMovie, ScheduledMovieDto, TitleByScheduleMovies}
+import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, AddScheduledMovieDto, Movie, MovieCardDto, ScheduledMovie, ScheduledMovieDto, TitleByScheduleMovies}
 import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -24,13 +25,16 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     override def write(obj: DayOfWeek): JsValue = JsString(obj.name())
   }
 
-  implicit val scheduledMovieFormat: RootJsonFormat[ScheduledMovie] = jsonFormat3(ScheduledMovie)
+
+  implicit val scheduledMovieFormat: RootJsonFormat[ScheduledMovie] = jsonFormat4(ScheduledMovie)
+  implicit val scheduledMovie2Format: RootJsonFormat[AddScheduledMovieDto] = jsonFormat3(AddScheduledMovieDto)
   implicit val addMovieFormat: RootJsonFormat[AddMovie] = jsonFormat4(AddMovie)
   implicit val movieFormat: RootJsonFormat[Movie] = jsonFormat5(Movie)
   implicit val ScheduledMovieDtoFormat: RootJsonFormat[ScheduledMovieDto] = jsonFormat4(ScheduledMovieDto)
-  implicit val SeatFormat: RootJsonFormat[Seat] = jsonFormat4(Seat)
+  implicit val SeatFormat: RootJsonFormat[Seat] = jsonFormat5(Seat)
   implicit val CinemaHallFormat: RootJsonFormat[CinemaHall] = jsonFormat2(CinemaHall)
   implicit val CinemaHallWithSeatsFormat: RootJsonFormat[CinemaHallWithSeats] = jsonFormat2(CinemaHallWithSeats)
   implicit val TitleByScheduleMoviesFormat: RootJsonFormat[TitleByScheduleMovies] = jsonFormat1(TitleByScheduleMovies)
   implicit val MovieCardDtoFormat: RootJsonFormat[MovieCardDto] = jsonFormat4(MovieCardDto)
+  implicit val TicketPriceFormat: RootJsonFormat[TicketPrice] = jsonFormat3(TicketPrice)
 }
