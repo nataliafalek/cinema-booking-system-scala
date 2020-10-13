@@ -10,13 +10,14 @@ import com.faleknatalia.cinemaBookingSystem.checkout.CheckoutService
 import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallService
 import com.faleknatalia.cinemaBookingSystem.dbutils.{DatabaseUtils, Tables}
 import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
+import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
 
-object Main extends JsonSupport {
+object Main extends JsonSupport with LazyLogging {
 
   def main(args: Array[String]): Unit = {
 

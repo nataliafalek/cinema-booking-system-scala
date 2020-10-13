@@ -18,5 +18,5 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % SlickVersion,
   "org.postgresql" % "postgresql" % "42.2.16",
   "ch.megard" %% "akka-http-cors" % "1.1.0",
-  "com.softwaremill.akka-http-session" %% "core" % "0.5.11"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 )
