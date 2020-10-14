@@ -6,20 +6,22 @@ import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import React from "react";
-import {useDispatch} from "react-redux";
-import { useHistory } from "react-router-dom";
-import { chooseMovie } from '../../redux/actions';
+import {useHistory} from "react-router-dom";
+import useLocalStorage from "../../localstorage/useLocalStorage";
 
 export default function MovieCard(props) {
     const history = useHistory();
     const classes = useStyles();
-    const dispatch = useDispatch()
-    const setChosenMovie = (movie, scheduledMovieWithHours) => {
-        dispatch(chooseMovie({
+    const [chosenMovie, setChosenMovie] = useLocalStorage('chosenMovie', null);
+
+    const chooseMovie = (movie, scheduledMovieWithHours) => {
+        const chosenMovie = {
             title: movie.title,
             movieId: movie.id,
             startHour: scheduledMovieWithHours[1],
-            scheduledMovieId: scheduledMovieWithHours[0]}))
+            scheduledMovieId: scheduledMovieWithHours[0]
+        }
+        setChosenMovie(chosenMovie)
         history.push("/cinema/checkout");
     }
 
@@ -37,7 +39,7 @@ export default function MovieCard(props) {
                 <CardActions>
                     {movie.scheduledMovieIdWithStartTime.map((scheduledMovieWithHours) =>
                         <Button size="small" key={scheduledMovieWithHours[0]} onClick={() =>
-                            setChosenMovie(movie, scheduledMovieWithHours)}>{scheduledMovieWithHours[1]}</Button>
+                            chooseMovie(movie, scheduledMovieWithHours)}>{scheduledMovieWithHours[1]}</Button>
                     )}
                 </CardActions>
             </Card>

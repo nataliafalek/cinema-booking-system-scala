@@ -1,16 +1,16 @@
 package com.faleknatalia.cinemaBookingSystem.cinemahall
 
-
 import com.faleknatalia.cinemaBookingSystem.dbutils.{DatabaseUtils, Tables}
 import slick.jdbc
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CinemaHallService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)  {
+class CinemaHallService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext) {
   private lazy val cinemaHallsTable = Tables.cinemaHallsTable
   private lazy val seatsTable = Tables.seatsTable
   private lazy val scheduledMoviesTable = Tables.scheduledMoviesTable
+  private lazy val scheduledMovieWithSeatsTable = Tables.scheduledMovieWithSeatsTable
   private val databaseUtils = new DatabaseUtils(db)(ec)
 
   def findAllCinemaHalls(): Future[Seq[CinemaHall]] = db.run(cinemaHallsTable.result)
@@ -37,11 +37,19 @@ class CinemaHallService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionCon
     databaseUtils.insertDataIfNotExists(seatsTable, generatedSeats)
   }
 
-  def findCinemaHallByMovieId(scheduledMovieId: Long): Future[Map[String, Seq[Seat]]] = {
-    val query = for {
+  def findCinemaHallWithSeatsByScheduledMovieId(scheduledMovieId: Long): Future[Map[String, Seq[SeatDetails]]] = {
+    val selectSeatsAndSeatsDetails = for {
       scheduledMovie <- scheduledMoviesTable if scheduledMovie.id === scheduledMovieId
-      seats <- seatsTable if seats.cinemaHallId === scheduledMovie.cinemaHallId
-    } yield seats
-    db.run(query.result.map { seats => seats.groupBy(seat => seat.columnNumber.toString)})
+      seat <- seatsTable if seat.cinemaHallId === scheduledMovie.cinemaHallId
+      seatDetails <- scheduledMovieWithSeatsTable if seatDetails.scheduledMovieId === scheduledMovieId && seatDetails.seatId === seat.id
+    } yield (seat, seatDetails)
+
+    val groupByColumnQuery = selectSeatsAndSeatsDetails.result.map { seats =>
+      val seatsDetails = seats.map { case (seat, scheduledMovieWithSeat) =>
+        SeatDetails(seat.seatNumber, seat.rowNumber, seat.columnNumber, seat.id, seat.cinemaHallId, scheduledMovieWithSeat.isFree)
+      }
+      seatsDetails.groupBy(seat => seat.columnNumber.toString)
+    }
+    db.run(groupByColumnQuery)
   }
 }

@@ -1,21 +1,24 @@
 import useStyles from "../../material-styles/useStyles";
 import React, {useEffect} from "react";
-import {useSelector} from "react-redux";
 import * as HttpService from "../../http/HttpService";
 import _ from "lodash";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import useLocalStorage from "../../localstorage/useLocalStorage";
+import SeatTextField from "../../common/SeatTextField";
+import CheckoutButton from "../../common/CheckoutButton";
 
-export default function CinemaHallView() {
-    const chosenMovie = useSelector(state => state.chosenMovie)
+export default function CinemaHallView(props) {
+    const chosenMovie = useLocalStorage('chosenMovie')[0];
     const [cinemaHall, setCinemaHall] = React.useState([]);
     const [ticketPrices, setTicketPrices] = React.useState([]);
     const [chosenSeatsAndPrices, setChosenSeatsAndPrices] = React.useState([]);
+    const [chosenSeatsAndPricesStorage, setChosenSeatsAndPricesStorage] = useLocalStorage('chosenSeatsAndPrices', null);
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -24,7 +27,7 @@ export default function CinemaHallView() {
     }, []);
 
     const listCinemaHall = () => {
-        HttpService.fetchJson(`cinemahall/list/${chosenMovie.scheduledMovieId}`).then(cinemaHall => {
+        HttpService.fetchJson(`cinemahall/seats/list/${chosenMovie.scheduledMovieId}`).then(cinemaHall => {
             setCinemaHall(cinemaHall)
         })
     }
@@ -40,7 +43,8 @@ export default function CinemaHallView() {
             seat: seat,
             price: ''
         }
-        const includesSeat = chosenSeatsAndPrices.map(chosenSeatAndPrice => chosenSeatAndPrice.seat.id).includes(seat.id);
+        const includesSeat = chosenSeatsAndPrices.map(chosenSeatAndPrice =>
+            chosenSeatAndPrice.seat.seatId).includes(seat.seatId);
         if(!includesSeat) {
             setChosenSeatsAndPrices([...chosenSeatsAndPrices, seatAndPrice])
         }
@@ -52,20 +56,22 @@ export default function CinemaHallView() {
             seat: seat,
             price: price
         }
-        const updatedPrice = chosenSeatsAndPricesCopy.map(seatAndPrice => seatAndPrice.seat.id === seat.id ? newSeatAndPrice : seatAndPrice)
+        const updatedPrice = chosenSeatsAndPricesCopy.map(seatAndPrice =>
+            seatAndPrice.seat.seatId === seat.seatId ? newSeatAndPrice : seatAndPrice)
 
         setChosenSeatsAndPrices(updatedPrice)
     }
 
     const deleteSeatAndPrice = (seat) => {
         const chosenSeatsAndPricesCopy = [...chosenSeatsAndPrices]
-        const updatedList = _.filter(chosenSeatsAndPricesCopy, seatAndPrice => seatAndPrice.seat.id !== seat.id)
+        const updatedList = _.filter(chosenSeatsAndPricesCopy, seatAndPrice => seatAndPrice.seat.seatId !== seat.seatId)
 
         setChosenSeatsAndPrices(updatedList)
     }
 
     const renderSeat = (seat) => {
-        const includesSeat = chosenSeatsAndPrices.map(chosenSeatAndPrice => chosenSeatAndPrice.seat.id).includes(seat.id);
+        const includesSeat = chosenSeatsAndPrices.map(chosenSeatAndPrice =>
+            chosenSeatAndPrice.seat.seatId).includes(seat.seatId) || !seat.isFree;
         const seatClass = includesSeat ? classes.cinemaHallSeatReserved : classes.cinemaHallSeatFree;
         return (
             <div className={seatClass}
@@ -74,6 +80,11 @@ export default function CinemaHallView() {
                 {seat.seatNumber}
             </div>
         )
+    }
+
+    const chooseSeatsAndPrices = () => {
+        setChosenSeatsAndPricesStorage(chosenSeatsAndPrices)
+        props.handleNext()
     }
 
     return (
@@ -91,7 +102,6 @@ export default function CinemaHallView() {
                           className={classes.root} noValidate autoComplete="off">
                         <SeatTextField value={seatAndPrice.seat.seatNumber} label={"Seat number"} />
                         <SeatTextField value={seatAndPrice.seat.rowNumber} label={"Row number"} />
-                        <SeatTextField value={seatAndPrice.seat.columnNumber} label={"Column number"} />
                         <FormControl className={classes.formControl}>
                             <InputLabel id="demo-simple-select-label">Price</InputLabel>
                             <Select
@@ -108,25 +118,14 @@ export default function CinemaHallView() {
                                 )}
                             </Select>
                         </FormControl>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={(() => deleteSeatAndPrice(seatAndPrice.seat))}>
+                        <IconButton aria-label="delete" className={classes.margin} onClick={(() =>
+                            deleteSeatAndPrice(seatAndPrice.seat))}>
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </form>
                 ) : null}
             </div>
+            <CheckoutButton function={chooseSeatsAndPrices} name={"Next"}/>
         </div>
-    )
-}
-
-function SeatTextField(props) {
-    return(
-        <TextField
-            id="standard-read-only-input"
-            label={props.label}
-            defaultValue={props.value}
-            InputProps={{
-                readOnly: true,
-            }}
-        />
     )
 }

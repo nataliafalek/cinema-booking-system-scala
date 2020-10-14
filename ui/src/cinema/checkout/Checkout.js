@@ -10,35 +10,35 @@ import PersonalData from "./PersonalData";
 import Summary from "./Summary";
 import useStyles from "../../material-styles/useStyles";
 
-const steps = ['Choose seats', 'Personal details', 'Summary'];
-
-function getStepContent(step) {
-    switch (step) {
-        case 0:
-            return <CinemaHallView/>;
-        case 1:
-            return <PersonalData/>;
-        case 2:
-            return <Summary/>;
-        default:
-            throw new Error('Unknown step');
-    }
-}
 
 export default function Checkout() {
+    const steps = ['Choose seats', 'Personal details', 'Summary'];
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
 
-    const handleNext = () => {
-        setActiveStep(activeStep + 1);
-    };
+    function getStepContent(step) {
+        switch (step) {
+            case 0:
+                return <CinemaHallView handleNext={handleNext}/>;
+            case 1:
+                return <PersonalData handleNext={handleNext}/>;
+            case 2:
+                return <Summary/>;
+            default:
+                throw new Error('Unknown step');
+        }
+    }
 
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };
 
+    const handleNext = () => {
+        setActiveStep(activeStep + 1);
+    };
+
     return (
-        <React.Fragment>
+        <>
             <main className={classes.checkoutLayout}>
                 <Paper className={classes.checkoutPaper}>
                     <Typography component="h1" variant="h4" align="center">
@@ -51,19 +51,18 @@ export default function Checkout() {
                             </Step>
                         ))}
                     </Stepper>
-                    <React.Fragment>
+                    <>
                         {activeStep === steps.length ? (
-                            <React.Fragment>
+                            <>
                                 <Typography variant="h5" gutterBottom>
-                                    Thank you for your order.
+                                    PaprykPaprykPapryk
                                 </Typography>
                                 <Typography variant="subtitle1">
-                                    Your order number is #2001539. We have emailed your order confirmation, and will
-                                    send you an update when your order has shipped.
+                                    PaprykPaprykPapryk
                                 </Typography>
-                            </React.Fragment>
+                            </>
                         ) : (
-                            <React.Fragment>
+                            <>
                                 {getStepContent(activeStep)}
                                 <div className={classes.checkoutButtons}>
                                     {activeStep !== 0 && (
@@ -71,20 +70,12 @@ export default function Checkout() {
                                             Back
                                         </Button>
                                     )}
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={handleNext}
-                                        className={classes.checkoutButton}
-                                    >
-                                        {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
-                                    </Button>
                                 </div>
-                            </React.Fragment>
+                            </>
                         )}
-                    </React.Fragment>
+                    </>
                 </Paper>
             </main>
-        </React.Fragment>
+        </>
     );
 }

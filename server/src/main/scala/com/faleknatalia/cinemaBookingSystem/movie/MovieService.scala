@@ -13,8 +13,10 @@ import scala.collection.immutable.SortedMap
 import scala.concurrent.{ExecutionContext, Future}
 
 class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext) {
-  private lazy val movies = Tables.moviesTable
-  private lazy val scheduledMovies = Tables.scheduledMoviesTable
+  private lazy val moviesTable = Tables.moviesTable
+  private lazy val scheduledMoviesTable = Tables.scheduledMoviesTable
+  private lazy val seatsTable = Tables.seatsTable
+  private lazy val scheduledMovieWithSeatsTable = Tables.scheduledMovieWithSeatsTable
 
   def addNewMovie(movieForm: AddMovie): Future[Unit] = {
     val movie = Movie(
@@ -22,22 +24,40 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
       description = movieForm.description,
       durationInSeconds = movieForm.durationInSeconds,
       imageUrl = URI.create(movieForm.imageUrl))
-    val addMovie = movies += movie
+    val addMovie = moviesTable += movie
     db.run(addMovie).map(_ => ())
   }
 
   def addNewScheduledMovie(addScheduledMovieDto: AddScheduledMovieDto): Future[Unit] = {
     val scheduledMovie = ScheduledMovie(addScheduledMovieDto.movieId, addScheduledMovieDto.dateOfProjection, addScheduledMovieDto.cinemaHallId)
-    val addScheduledMovie = scheduledMovies += scheduledMovie
-    db.run(addScheduledMovie).map(_ => ())
+    val addScheduledMovie = scheduledMoviesTable returning scheduledMoviesTable.map(_.id) += scheduledMovie
+    db.run(addScheduledMovie).map(id => generateSeatsForScheduledMovie(id))
   }
 
-  def findAllMovies(): Future[Seq[Movie]] = db.run(movies.result)
+  def generateSeatsForScheduledMovie(scheduledMovieId: Long): Future[Unit] = {
+    val selectSeatsForScheduledMovie = for {
+      scheduledMovie <- scheduledMoviesTable if scheduledMovie.id === scheduledMovieId
+      seat <- seatsTable if seat.cinemaHallId === scheduledMovie.cinemaHallId
+    } yield (seat.id, scheduledMovie.cinemaHallId)
+
+    val runSelect = db.run(selectSeatsForScheduledMovie.result)
+
+    val saveScheduledMovieWithSeats = runSelect.map { result =>
+      result.map { case (seatId, cinemaHallId) =>
+        ScheduledMovieWithSeat(scheduledMovieId, cinemaHallId, isFree = true, seatId)}
+    }
+
+    saveScheduledMovieWithSeats.map { seats =>
+      db.run(scheduledMovieWithSeatsTable ++= seats)
+    }
+  }
+
+  def findAllMovies(): Future[Seq[Movie]] = db.run(moviesTable.result)
 
   def findAllMoviesByDayOfTheWeek(): Future[Map[DayOfWeek, Seq[MovieCardDto]]] = {
-    val allScheduledMoviesQuery = scheduledMovies.filter { movie =>
+    val allScheduledMoviesQuery = scheduledMoviesTable.filter { movie =>
       movie.dateOfProjection.between(ZonedDateTime.now(), ZonedDateTime.now().plusDays(7))
-    }.join(movies).on(_.movieId === _.id)
+    }.join(moviesTable).on(_.movieId === _.id)
 
     db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
       fromScheduledMoviesToMoviesByDayOfTheWeek(scheduledMovies)
@@ -66,7 +86,7 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
   }
 
   def findAllScheduledMovies(): Future[Seq[ScheduledMovieDto]] = {
-    val allScheduledMoviesQuery = scheduledMovies.join(movies).on(_.movieId === _.id)
+    val allScheduledMoviesQuery = scheduledMoviesTable.join(moviesTable).on(_.movieId === _.id)
     db.run(allScheduledMoviesQuery.result).map { scheduledMovies =>
       toScheduledMovieDto(scheduledMovies)
     }
