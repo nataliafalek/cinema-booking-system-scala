@@ -7,15 +7,15 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex'
     },
     cinemaRoot: {
-        background: 'black'
+        background: '#181E23'
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
         color: 'white',
-        background: 'black'
+        background: '#181E23'
     },
     toolBar: {
-        background: 'black'
+        background: '#181E23'
     },
     menuBar: {
         float: 'left'
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        background: 'rgba(0, 0, 0, 0.87)',
+        background: '#181E23',
         height: "100%"
     },
     drawerContainer: {

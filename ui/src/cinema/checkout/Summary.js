@@ -33,7 +33,7 @@ export default function Summary() {
             scheduledMovieId: chosenMovie.scheduledMovieId,
             chosenSeatsAndPrices: _.map(chosenSeatsAndPrices, chosenSeatAndPrice => ({
                 seatId: chosenSeatAndPrice.seat.seatId,
-                priceId: chosenSeatAndPrice.price.ticketPrice
+                priceId: chosenSeatAndPrice.price.id
             }))
         }
         HttpService.postJson('reservation/make', reservationDto)
