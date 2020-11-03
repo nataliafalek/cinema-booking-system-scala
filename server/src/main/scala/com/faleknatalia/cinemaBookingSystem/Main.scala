@@ -6,10 +6,12 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import com.faleknatalia.cinemaBookingSystem.JsonSupport._
 import com.faleknatalia.cinemaBookingSystem.checkout.{CheckoutService, PersonalDataDto}
 import com.faleknatalia.cinemaBookingSystem.cinemahall.CinemaHallService
 import com.faleknatalia.cinemaBookingSystem.dbutils.{DatabaseUtils, Tables}
-import com.faleknatalia.cinemaBookingSystem.movie.{MovieService, _}
+import com.faleknatalia.cinemaBookingSystem.movie._
+import com.faleknatalia.cinemaBookingSystem.payment.{PaymentConfig, PaymentService}
 import com.faleknatalia.cinemaBookingSystem.reservation.{ReservationDto, ReservationService}
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.JdbcBackend.Database
@@ -18,7 +20,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
 
-object Main extends JsonSupport with LazyLogging {
+object Main extends LazyLogging {
 
   //TODO ERROR HANDLING, TRY, EITHER, SCALA TEST, USE HIGHER ORDER FUNCTION, TYPE CLASSES ITD., LOGGING
 
@@ -31,13 +33,17 @@ object Main extends JsonSupport with LazyLogging {
     val checkoutService = new CheckoutService(db)(executionContext)
     val reservationService = new ReservationService(db)(executionContext)
     val dbUtils = new DatabaseUtils(db)(executionContext)
+    val paymentService = new PaymentService()(executionContext, system)
 
     val bootstrapDB = for {
       _ <- dbUtils.schemaCreate(Tables.allTablesSchema())
       _ <- cinemaHallService.saveCinemaHalls()
       _ <- cinemaHallService.saveSeats()
       _ <- checkoutService.saveTicketData()
+      _ <- movieService.saveGeneratedMovies()
+      _ <- movieService.saveGeneratedScheduledMovies()
     } yield ()
+
     Await.result(bootstrapDB, 30.seconds)
 
     val route = cors() {
@@ -63,7 +69,7 @@ object Main extends JsonSupport with LazyLogging {
         post {
           entity(as[AddScheduledMovieDto]) { scheduledMovie =>
             complete {
-              movieService.addNewScheduledMovie(scheduledMovie).map { _ =>
+              movieService.addNewScheduledMovieDto(scheduledMovie).map { _ =>
                 StatusCodes.OK
               }
             }
@@ -110,6 +116,19 @@ object Main extends JsonSupport with LazyLogging {
               reservationService.makeReservation(reservationDto).map { _ =>
                 StatusCodes.OK
               }
+            }
+          }
+        }
+      } ~ path("payment") {
+        get {
+          complete(paymentService.performPayment())
+        }
+      } ~ path("notify" ) {
+        post {
+          entity(as[String]) { notificationResponse =>
+            complete {
+              logger.info("PayU notification response: \n" + notificationResponse)
+              StatusCodes.OK
             }
           }
         }

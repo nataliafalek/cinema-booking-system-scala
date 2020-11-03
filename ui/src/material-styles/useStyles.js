@@ -9,6 +9,13 @@ const useStyles = makeStyles((theme) => ({
     cinemaRoot: {
         background: '#181E23'
     },
+    paprykLogo: {
+        width: "30%",
+        height: "30%"
+    },
+    paprykLogoButton: {
+        display: "block"
+    },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
         color: 'white',
@@ -21,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         float: 'left'
     },
     spanRedColor: {
-        color: '#ff3366'
+        color: '#d328b4'
     },
     drawer: {
         width: drawerWidth,
@@ -38,12 +45,12 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        padding: theme.spacing(5),
         marginLeft: drawerWidth,
         width: '100%',
     },
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(5),
     },
     title: {
         flexGrow: 1,
@@ -52,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
         color: "white"
     },
     paper: {
-        marginTop: theme.spacing(3),
+        marginTop: theme.spacing(5),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -119,17 +126,17 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translateZ(0)',
     },
     movieTitle: {
-        color: '#ff3366',
+        color: '#F81A36',
         fontWeight: "bold"
 },
     titleBar: {
-        background: '#ff3366'
+        background: '#d328b4'
     },
     icon: {
         color: 'rgba(255, 255, 255, 0.54)',
     },
     movieCarousel: {
-        marginTop: theme.spacing(5)
+        marginTop: theme.spacing(10)
     },
     petlaImage: {
         height: 600,
@@ -150,7 +157,7 @@ const useStyles = makeStyles((theme) => ({
         position: "absolute",
         bottom: 70,
         right: 200,
-        color: '#ff3366'
+        color: '#d328b4'
     },
     paprykRoot: {
         maxWidth: 345,
@@ -164,7 +171,7 @@ const useStyles = makeStyles((theme) => ({
        position: "center"
     },
     whatsOn: {
-        marginTop: theme.spacing(10),
+        marginTop: theme.spacing(13),
         color: "white"
     },
     whatsOnTabs: {

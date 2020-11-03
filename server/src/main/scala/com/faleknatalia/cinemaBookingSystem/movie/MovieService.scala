@@ -4,7 +4,7 @@ import java.net.URI
 import java.time.format.DateTimeFormatter
 import java.time.{DayOfWeek, ZonedDateTime}
 
-import com.faleknatalia.cinemaBookingSystem.dbutils.Tables
+import com.faleknatalia.cinemaBookingSystem.dbutils.{DatabaseUtils, Tables}
 import com.faleknatalia.cinemaBookingSystem.movie.MovieService.daysOrder
 import slick.jdbc
 import slick.jdbc.PostgresProfile.api._
@@ -17,6 +17,13 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
   private lazy val scheduledMoviesTable = Tables.scheduledMoviesTable
   private lazy val seatsTable = Tables.seatsTable
   private lazy val scheduledMovieWithSeatsTable = Tables.scheduledMovieWithSeatsTable
+  private lazy val cinemaHallsTable = Tables.cinemaHallsTable
+  private val databaseUtils = new DatabaseUtils(db)(ec)
+
+  def saveGeneratedMovies(): Future[Unit] = {
+    val movies = MovieGenerator.generateMovies
+    databaseUtils.insertDataIfNotExists(moviesTable, movies)
+  }
 
   def addNewMovie(movieForm: AddMovie): Future[Unit] = {
     val movie = Movie(
@@ -28,7 +35,7 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
     db.run(addMovie).map(_ => ())
   }
 
-  def addNewScheduledMovie(addScheduledMovieDto: AddScheduledMovieDto): Future[Unit] = {
+  def addNewScheduledMovieDto(addScheduledMovieDto: AddScheduledMovieDto): Future[Unit] = {
     val scheduledMovie = ScheduledMovie(addScheduledMovieDto.movieId, addScheduledMovieDto.dateOfProjection, addScheduledMovieDto.cinemaHallId)
     val addScheduledMovie = scheduledMoviesTable returning scheduledMoviesTable.map(_.id) += scheduledMovie
     db.run(addScheduledMovie).map(id => generateSeatsForScheduledMovie(id))
@@ -44,7 +51,8 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
 
     val saveScheduledMovieWithSeats = runSelect.map { result =>
       result.map { case (seatId, cinemaHallId) =>
-        ScheduledMovieWithSeat(scheduledMovieId, cinemaHallId, isFree = true, seatId)}
+        ScheduledMovieWithSeat(scheduledMovieId, cinemaHallId, isFree = true, seatId)
+      }
     }
 
     saveScheduledMovieWithSeats.map { seats =>
@@ -64,6 +72,48 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
     }
   }
 
+  def saveGeneratedScheduledMovies(): Future[Unit] = {
+    hasScheduledForToday.map { hasSchedule =>
+      if (!hasSchedule) {
+        val allMovies = findAllMovies()
+        val allCinemaHalls = db.run(cinemaHallsTable.result)
+        val moviesAndCinemaHalls = for {
+          movies <- allMovies
+          cinemaHalls <- allCinemaHalls
+        } yield (movies, cinemaHalls)
+        val scheduledMoviesToSave = moviesAndCinemaHalls.map { case (movies, cinemaHalls) =>
+          val generatedScheduledMovies = MovieGenerator.generateScheduledMovies(movies, cinemaHalls)
+          generatedScheduledMovies
+        }
+        val savedScheduledMovies = scheduledMoviesToSave.flatMap { moviesToSave =>
+          db.run(scheduledMoviesTable returning scheduledMoviesTable ++= moviesToSave)
+        }
+        savedScheduledMovies.flatMap { scheduledMovies =>
+          generateSeatsForScheduledMovies(scheduledMovies.toList)
+        }
+      } else {
+        Future.successful(())
+      }
+    }
+  }
+
+  private def generateSeatsForScheduledMovies(scheduledMoviesToSave: List[ScheduledMovie]): Future[Unit] = {
+    Future.sequence(scheduledMoviesToSave.map { scheduledMovie =>
+      generateSeatsForScheduledMovie(scheduledMovie.id)
+    }
+    ).map(_ => ())
+  }
+
+  def hasScheduledForToday: Future[Boolean] = {
+    val today = ZonedDateTime.now()
+    val todayOrLaterSchedule = scheduledMoviesTable.filter { movie =>
+      movie.dateOfProjection > today
+    }
+    db.run(todayOrLaterSchedule.result).map { movies =>
+      movies.nonEmpty
+    }
+  }
+
   private case class ScheduledMovieDetails(movieId: Long, title: String, start: ZonedDateTime, imageUrl: String)
 
   private def fromScheduledMoviesToMoviesByDayOfTheWeek(scheduledMovies: Seq[(ScheduledMovie, Movie)]): SortedMap[DayOfWeek, Seq[MovieCardDto]] = {
@@ -75,12 +125,12 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
       val groupedByTitle = moviesWithStartTime.groupBy(movieWithStartTime => movieWithStartTime._1.title)
       val dailyRepertoire = moviesWithStartTime.distinct.map { case (movie, start, scheduledMovieId) =>
         val movieSchedules = groupedByTitle(movie.title)
-        val scheduledMovieIdsWithStartHours = movieSchedules.map{ case (movie, startTime, scheduledMovieID) =>
+        val scheduledMovieIdsWithStartHours = movieSchedules.map { case (movie, startTime, scheduledMovieID) =>
           scheduledMovieID -> startTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
         }
         MovieCardDto(movie.title, movie.id, scheduledMovieIdsWithStartHours, movie.imageUrl.toString)
       }
-      (dayOfTheWeek, dailyRepertoire)
+      (dayOfTheWeek, dailyRepertoire.distinct)
     }
     SortedMap.from(movieCardsByDayOfTheWeek)(Ordering.by(day => daysOrder(day)))
   }

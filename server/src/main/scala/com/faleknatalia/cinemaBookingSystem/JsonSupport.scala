@@ -8,10 +8,11 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.faleknatalia.cinemaBookingSystem.checkout.{PersonalData, PersonalDataDto, TicketPrice}
 import com.faleknatalia.cinemaBookingSystem.cinemahall.{CinemaHall, CinemaHallWithSeats, Seat, SeatDetails}
 import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, AddScheduledMovieDto, Movie, MovieCardDto, ScheduledMovie, ScheduledMovieDto, TitleByScheduleMovies}
+import com.faleknatalia.cinemaBookingSystem.payment.{AccessToken, Buyer, OrderRequest, OrderResponse, Product}
 import com.faleknatalia.cinemaBookingSystem.reservation.{ReservationDto, SeatAndPrice}
 import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat, RootJsonFormat}
 
-trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
+object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit lazy val ZonedDateTimeFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
     override def read(json: JsValue): ZonedDateTime = ZonedDateTime.parse(json.convertTo[String], DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     override def write(obj: ZonedDateTime): JsValue = JsString(obj.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
@@ -42,4 +43,9 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit lazy val SeatDetailsFormat: RootJsonFormat[SeatDetails] = jsonFormat6(SeatDetails)
   implicit lazy val SeatAndPriceFormat: RootJsonFormat[SeatAndPrice] = jsonFormat2(SeatAndPrice)
   implicit lazy val ReservationDtoFormat: RootJsonFormat[ReservationDto] = jsonFormat3(ReservationDto)
+  implicit lazy val AccessTokenFormat: RootJsonFormat[AccessToken] = jsonFormat4(AccessToken)
+  implicit lazy val ProductFormat: RootJsonFormat[Product] = jsonFormat3(Product)
+  implicit lazy val BuyerFormat: RootJsonFormat[Buyer] = jsonFormat4(Buyer)
+  implicit lazy val OrderRequestFormat: RootJsonFormat[OrderRequest] = jsonFormat10(OrderRequest.apply)
+  implicit lazy val OrderResponseFormat: RootJsonFormat[OrderResponse] = jsonFormat4(OrderResponse)
 }

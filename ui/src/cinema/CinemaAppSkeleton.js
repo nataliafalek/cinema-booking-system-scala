@@ -18,7 +18,7 @@ export default function CinemaAppSkeleton() {
              <AppBar position="fixed" className={classes.appBar}>
                  <Toolbar className={classes.toolBar}>
                      <Typography variant="h6" className={classes.title}>
-                         <Button href="/" color="inherit">PaprykCinema</Button>
+                         <Button href="/" color="inherit" className={classes.paprykLogoButton}><img className={classes.paprykLogo} src={"/papryk-logo.png"} alt={""}/></Button>
                      </Typography>
                      <Typography className={classes.menuBar}>
                      <Button color="inherit">
@@ -37,6 +37,7 @@ export default function CinemaAppSkeleton() {
                         <Route exact path="/cinema/papryk" component={WhoIsPapryk}/>
                         <Route exact path="/cinema/whatsOn" component={WhatsOn}/>
                         <Route exact path="/cinema/checkout" component={Checkout}/>
+                        <Route exact path="/cinema/paymentSuccess" component={WhoIsPapryk}/>
                     </div>
                 </HashRouter>
             </div>
