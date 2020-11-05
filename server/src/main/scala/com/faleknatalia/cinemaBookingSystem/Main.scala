@@ -31,9 +31,9 @@ object Main extends LazyLogging {
     val movieService = new MovieService(db)(executionContext)
     val cinemaHallService = new CinemaHallService(db)(executionContext)
     val checkoutService = new CheckoutService(db)(executionContext)
-    val reservationService = new ReservationService(db)(executionContext)
-    val dbUtils = new DatabaseUtils(db)(executionContext)
     val paymentService = new PaymentService()(executionContext, system)
+    val reservationService = new ReservationService(db, paymentService)(executionContext)
+    val dbUtils = new DatabaseUtils(db)(executionContext)
 
     val bootstrapDB = for {
       _ <- dbUtils.schemaCreate(Tables.allTablesSchema())
@@ -117,15 +117,12 @@ object Main extends LazyLogging {
         post {
           entity(as[ReservationDto]) { reservationDto =>
             complete {
-              reservationService.makeReservation(reservationDto).map { _ =>
-                StatusCodes.OK
+              reservationService.makeReservation(reservationDto).map {
+                case Right(redirectUri) => StatusCodes.OK -> Some(redirectUri)
+                case Left(_) => StatusCodes.InternalServerError -> None
               }
             }
           }
-        }
-      } ~ path("payment") {
-        get {
-          complete(paymentService.performPayment())
         }
       } ~ path("notify" ) {
         post {

@@ -37,10 +37,13 @@ export default function Summary(props) {
                 priceId: chosenSeatAndPrice.price.id
             }))
         }
+        //TODO handle payment fail
         HttpService.postJson('reservation/make', reservationDto)
-            .then(data =>
-                console.log("TODO REDIRECT TO PAYMENT", reservationDto)
-            )
+            .then(response => response.json())
+            .then(data => {
+                    window.location.href = data.redirectUri
+                }
+            );
     }
 
     return (

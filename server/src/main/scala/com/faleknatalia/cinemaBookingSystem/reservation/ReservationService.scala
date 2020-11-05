@@ -4,12 +4,14 @@ import java.time.format.DateTimeFormatter
 
 import com.faleknatalia.cinemaBookingSystem.dbutils.Tables
 import com.faleknatalia.cinemaBookingSystem.mail.{EmailSender, SeatAndPriceDetails, TicketData, TicketGenerator}
+import com.faleknatalia.cinemaBookingSystem.payment.{PaymentService, RedirectUri}
+import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReservationService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext) {
+class ReservationService(db: jdbc.JdbcBackend.Database, paymentService: PaymentService)(implicit ec: ExecutionContext) extends LazyLogging {
   private lazy val reservationTable = Tables.reservationTable
   private lazy val scheduledMovieWithSeatTable = Tables.scheduledMovieWithSeatsTable
   private lazy val scheduledMoviesTable = Tables.scheduledMoviesTable
@@ -19,7 +21,7 @@ class ReservationService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionCo
   private lazy val moviesTable = Tables.moviesTable
   private lazy val personalDataTable = Tables.personalDataTable
 
-  def makeReservation(reservationDto: ReservationDto): Future[Unit] = {
+  def makeReservation(reservationDto: ReservationDto): Future[Either[OrderException, RedirectUri]] = {
     val reserve = Future.sequence {
       reservationDto.chosenSeatsAndPrices.map { seatAndPrice =>
         reserveScheduledMovieWithSeat(reservationDto.scheduledMovieId, seatAndPrice.seatId)
@@ -31,7 +33,24 @@ class ReservationService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionCo
         Reservation(reservationDto.personalDataId, reservationDto.scheduledMovieId, seatAndPrice.seatId, seatAndPrice.priceId)
       }
       val insertQuery = reservationTable ++= reservationsPerSeat
-      db.run(insertQuery).flatMap(_ => sendEmailWithTicket(reservationDto))
+
+      db.run(insertQuery).flatMap(_ =>
+        paymentService.performPayment().flatMap { orderResponse =>
+          orderResponse.status.statusCode match {
+            case "SUCCESS" => {
+              logger.info(s"Payment succeeded. Generated redirectUri ${orderResponse.redirectUri}")
+              sendEmailWithTicket(reservationDto).map { _ =>
+                logger.info("Sending email success.")
+                Right(RedirectUri(orderResponse.redirectUri))
+              }
+            }
+            case _ => {
+              logger.info(s"Payment failed, status: ${orderResponse.status.statusCode}")
+              Future.successful(Left(OrderException(s"Can't get redirect uri for reservation ${reservationDto}")))
+            }
+          }
+        }
+      )
     }
   }
 
@@ -80,3 +99,5 @@ class ReservationService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionCo
     }
   }
 }
+
+case class OrderException(msg: String) extends RuntimeException(msg)

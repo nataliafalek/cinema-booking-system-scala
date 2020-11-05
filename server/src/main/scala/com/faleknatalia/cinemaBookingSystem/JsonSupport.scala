@@ -8,7 +8,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.faleknatalia.cinemaBookingSystem.checkout.{PersonalData, PersonalDataDto, TicketPrice}
 import com.faleknatalia.cinemaBookingSystem.cinemahall.{CinemaHall, CinemaHallWithSeats, Seat, SeatDetails}
 import com.faleknatalia.cinemaBookingSystem.movie.{AddMovie, AddScheduledMovieDto, Movie, MovieCardDto, ScheduledMovie, ScheduledMovieDto, TitleByScheduleMovies}
-import com.faleknatalia.cinemaBookingSystem.payment.{AccessToken, Buyer, OrderRequest, OrderResponse, Product}
+import com.faleknatalia.cinemaBookingSystem.payment.{AccessToken, Buyer, OrderRequest, OrderResponse, Product, RedirectUri, Status}
 import com.faleknatalia.cinemaBookingSystem.reservation.{ReservationDto, SeatAndPrice}
 import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat, RootJsonFormat}
 
@@ -47,5 +47,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit lazy val ProductFormat: RootJsonFormat[Product] = jsonFormat3(Product)
   implicit lazy val BuyerFormat: RootJsonFormat[Buyer] = jsonFormat4(Buyer)
   implicit lazy val OrderRequestFormat: RootJsonFormat[OrderRequest] = jsonFormat10(OrderRequest.apply)
+  implicit lazy val StatusFormat: RootJsonFormat[Status] = jsonFormat1(Status)
   implicit lazy val OrderResponseFormat: RootJsonFormat[OrderResponse] = jsonFormat4(OrderResponse)
+  implicit lazy val RedirectUriFormat: RootJsonFormat[RedirectUri] = jsonFormat1(RedirectUri)
 }

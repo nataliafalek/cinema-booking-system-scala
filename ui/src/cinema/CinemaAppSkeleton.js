@@ -12,6 +12,8 @@ import WhatsOn from "./whatsOn/WhatsOn";
 import Checkout from "./checkout/Checkout";
 import Footer from "../common/Footer";
 import MovieDetails from "./whatsOn/MovieDetails";
+import PaymentSuccess from "./checkout/PaymentSuccess";
+import PaymentFailed from "./checkout/PaymentFailed";
 
 export default function CinemaAppSkeleton() {
     const classes = useStyles();
@@ -36,7 +38,8 @@ export default function CinemaAppSkeleton() {
                     <Route exact path="/cinema/papryk" component={WhoIsPapryk}/>
                     <Route exact path="/cinema/whatsOn" component={WhatsOn}/>
                     <Route exact path="/cinema/checkout" component={Checkout}/>
-                    <Route exact path="/cinema/paymentSuccess" component={WhoIsPapryk}/>
+                    <Route exact path="/cinema/paymentSuccess" component={PaymentSuccess}/>
+                    <Route exact path="/cinema/paymentFailed" component={PaymentFailed}/>
                     <Route path="/cinema/movie/details/:movieId" component={(props) => <MovieDetails {...props}/>}/>
                 </div>
             </HashRouter>

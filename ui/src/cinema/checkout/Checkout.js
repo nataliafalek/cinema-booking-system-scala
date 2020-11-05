@@ -23,7 +23,7 @@ export default function Checkout() {
             case 1:
                 return <PersonalData handleNext={handleNext} handleBack={handleBack}/>;
             case 2:
-                return <Summary/>;
+                return <Summary handleBack={handleBack}/>;
             default:
                 throw new Error('Unknown step');
         }

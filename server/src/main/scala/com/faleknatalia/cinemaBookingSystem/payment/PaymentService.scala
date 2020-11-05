@@ -94,10 +94,14 @@ object OrderRequest {
 
 case class OrderResponse(orderId: String,
                          extOrderId: String,
-                         statusCode: String,
+                         status: Status,
                          redirectUri: String)
 
 case class Product(name: String,
                     unitPrice: String,
                     quantity: String)
+
+case class Status(statusCode: String)
+
+case class RedirectUri(redirectUri: String)
 

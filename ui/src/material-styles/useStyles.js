@@ -214,6 +214,15 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         fontSize: 40
     },
+    paymentResult: {
+        backgroundColor: '#030104',
+        height: 200,
+        color: '#B30089',
+        padding: theme.spacing(5),
+        marginTop: theme.spacing(12),
+        textAlign: 'center',
+        fontSize: 40
+    },
     checkoutAppBar: {
         position: 'relative',
     },
