@@ -1,34 +1,26 @@
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 
 const drawerWidth = 240;
-
+//TODO porzadki w css
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex'
     },
     cinemaRoot: {
-        background: '#181E23'
+        background: '#030104',
     },
     paprykLogo: {
-        width: "30%",
-        height: "30%"
+        width: 200,
+        height: 100
     },
     paprykLogoButton: {
-        display: "block"
+        display: "block",
+        width: 100
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
-        color: 'white',
-        background: '#181E23'
-    },
-    toolBar: {
-        background: '#181E23'
-    },
-    menuBar: {
-        float: 'left'
-    },
-    spanRedColor: {
-        color: '#d328b4'
+        background: '#030104',
+        height: '100px'
     },
     drawer: {
         width: drawerWidth,
@@ -36,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        background: '#181E23',
+        background: '#030104',
         height: "100%"
     },
     drawerContainer: {
@@ -51,6 +43,17 @@ const useStyles = makeStyles((theme) => ({
     },
     menuButton: {
         marginRight: theme.spacing(5),
+    },
+    menuTab1: {
+        color: '#B30089',
+        fontSize: 20
+    },
+    menuTab2: {
+        color: '#AF00F5',
+        fontSize: 20
+    },
+    tabLabel: {
+        fontSize: 20
     },
     title: {
         flexGrow: 1,
@@ -103,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1)
     },
     formControl: {
-        width: '100%', // Fix IE 11 issue.
+        width: '100%',
         marginTop: theme.spacing(1),
     },
     selectEmpty: {
@@ -113,80 +116,111 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3),
         width: 200,
     },
-    movieList: {
-        marginTop: theme.spacing(5),
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        backgroundColor: theme.palette.background.paper,
-    },
-    gridList: {
-        flexWrap: 'nowrap',
-        transform: 'translateZ(0)',
-    },
-    movieTitle: {
-        color: '#F81A36',
-        fontWeight: "bold"
-},
-    titleBar: {
-        background: '#d328b4'
-    },
-    icon: {
-        color: 'rgba(255, 255, 255, 0.54)',
-    },
     movieCarousel: {
         marginTop: theme.spacing(10)
     },
     petlaImage: {
-        height: 600,
+        height: 700,
         backgroundImage: "url('./petla.jpg')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        opacity: '0.60'
     },
     badboyImage: {
-        height: 600,
+        height: 700,
         backgroundImage: "url('./badboy.jpg')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'top',
+        opacity: '0.60'
     },
+    cinemaImage: {
+        height: 700,
+        backgroundImage: "url('./background1.jpg')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: '0.60'
+    },
+    marathonImage: {
+        height: 700,
+        backgroundImage: "url('./background2.jpg')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: '0.60'
+    },
+
     movieCarouselHeader: {
         fontSize: 60,
         position: "absolute",
-        bottom: 70,
+        top: 10,
         right: 200,
-        color: '#d328b4'
+        color: '#B30089'
+    },
+    movieCarouselText: {
+        fontSize: 26,
+        position: "absolute",
+        top: 140,
+        left: '60%',
+        color: '#D9E6FC'
     },
     paprykRoot: {
         maxWidth: 345,
     },
-    media: {
-        height: 140,
-    },
-    whoIsPapryk: {
-        width: "50%",
-        height: "50%",
-       position: "center"
-    },
     whatsOn: {
-        marginTop: theme.spacing(13),
-        color: "white"
+        marginTop: theme.spacing(12),
+        // color: "white",
+        color: '#AF00F5',
+        fontSize: 40
+
+    },
+    whatsOnTab: {
+        fontSize: 40
+
     },
     whatsOnTabs: {
-            backgroundColor: theme.palette.background.paper,
+        backgroundColor: '#030104',
+        color: '#AF00F5',
+        fontSize: 40
+    },
+    movieCardMedia: {
+        opacity: '0.8',
+        height: 0,
+        paddingTop: '56.25%', // 16:9
     },
     movieCardContent: {
-        width: 400,
-        margin: theme.spacing(3),
+        height: '100%',
+        width: '30%',
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        flexDirection: 'column',
+        background: '#030104',
+    },
+    movieCardMediaTitle: {
+        color: '#B30089'
+    },
+    movieCardMediaHour: {
+        color: '#AF00F5',
+        fontSize: 16
+    },
+    noRepertoire: {
+        backgroundColor: '#030104',
+        height: 200,
+        color: '#B30089',
+        padding: theme.spacing(5),
+        textAlign: 'center',
+        fontSize: 40
     },
     checkoutAppBar: {
         position: 'relative',
     },
     checkoutLayout: {
         width: 'auto',
-        height: 1000,
+        minHeight: 800,
+        marginTop: theme.spacing(12),
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
@@ -194,47 +228,152 @@ const useStyles = makeStyles((theme) => ({
             marginLeft: 'auto',
             marginRight: 'auto',
         },
+        opacity: '0.9'
     },
     checkoutPaper: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3),
         padding: theme.spacing(2),
-        height: 800,
+        height: '100%',
+        overflow: 'hidden',
         [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
             marginTop: theme.spacing(6),
             marginBottom: theme.spacing(6),
             padding: theme.spacing(3),
         },
+        backgroundColor: '#030104',
+        color: '#B30089',
     },
     checkoutStepper: {
         padding: theme.spacing(3, 0, 5),
+        backgroundColor: '#030104',
+        color: '#B30089'
     },
     checkoutButtons: {
         display: 'flex',
         justifyContent: 'flex-end',
     },
-    checkoutButton: {
-        marginTop: theme.spacing(3),
-        marginLeft: theme.spacing(1),
+    cinemaHallViewHeader: {
+        fontSize: 20,
+        fontWeigh: 'bold',
+        color: '#F6F8F8'
+    },
+    cinemaHallViewForm: {
+        // display: 'block',
+        color: 'white',
+        // marginLeft: 'auto',
+        // marginRight: 'auto',
+    },
+    cinemaHallView: {
+        display: "grid",
+        marginBottom: theme.spacing(5)
+    },
+    cinemaHallViewScreen: {
+        height: 25,
+        width: 450,
+        background: '#ADB5BD',
+        color: '#030104',
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginBottom: 40,
+        textAlign: 'center',
+        padding: 5
     },
     cinemaHallRow: {
-        float: "left"
+        float: "left",
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
     },
     cinemaHallSeatReserved: {
         width: 40,
         height: 40,
-        background: "red",
-        margin: 3
+        background: "#2C003D",
+        color: "#2C003D",
+        margin: 3,
+        display: "inline-block"
     },
     cinemaHallSeatFree: {
         width: 40,
         height: 40,
-        background: "green",
-        margin: 3
-    },
-    cinemaHall: {
-        float: "left"
+        background: '#F6F8F8',
+        color: "#F6F8F8",
+        margin: 3,
+        display: "inline-block",
+        cursor: 'pointer',
 
+    },
+    cinemaHallViewRowNumber: {
+        color: '#B30089'
+    },
+    cinemaHallViewTicket: {
+        color: '#F6F8F8'
+    },
+    footer: {
+        backgroundColor: '#030104',
+        padding: theme.spacing(6, 0),
+        color: '#F6F8F8'
+    },
+    contentBackground: {
+        background: '#030104',
+        backgroundImage: "url('./background444.png')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    },
+    cardGrid: {
+        paddingTop: theme.spacing(8),
+        paddingBottom: theme.spacing(8),
+    },
+    card: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        color: '#F62DAE',
+        background: '#030104',
+        opacity: '0.8'
+    },
+    cardMedia: {
+        paddingTop: '56.25%', // 16:9
+    },
+    cardContent: {
+        flexGrow: 1,
+    },
+    movieDetailsContent: {
+        marginTop: theme.spacing(12),
+        height: 600
+    },
+    movieDetailsImage: {
+        margin: theme.spacing(3),
+        height: '70%',
+        color: '#F62DAE',
+        background: '#030104',
+    },
+    movieDetailsTitle: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(8),
+        color: '#F62DAE',
+    },
+    movieDetailsDescription: {
+        color: 'white',
+    },
+    whoIsPaprykImage: {
+        marginTop: theme.spacing(12),
+        padding: theme.spacing(5),
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '70%',
+        opacity: '0.93'
+    },
+    personalDataForm: {
+        marginTop: theme.spacing(5),
+        height: 400
+    },
+    checkoutSummary: {
+        color: '#F6F8F8',
+        marginTop: theme.spacing(5),
     }
 }));
 

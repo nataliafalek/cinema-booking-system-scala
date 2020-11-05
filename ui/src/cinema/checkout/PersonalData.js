@@ -4,7 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import useLocalStorage from "../../localstorage/useLocalStorage";
 import * as HttpService from "../../http/HttpService";
-import CheckoutButton from "../../common/CheckoutButton";
+import CheckoutNextButton from "./CheckoutNextButton";
+import useStyles from "../../material-styles/useStyles";
+import CheckoutBackButton from "./CheckoutBackButton";
+import _ from 'lodash';
 
 export default function PersonalData(props) {
     const chosenMovie = useLocalStorage('chosenMovie')[0];
@@ -13,6 +16,7 @@ export default function PersonalData(props) {
     const [firstName, setFirstName] = React.useState('');
     const [phone, setPhone] = React.useState('');
     const [email, setEmail] = React.useState('');
+    const classes = useStyles();
 
     const addPersonalData = () => {
         const personalData = {
@@ -31,8 +35,12 @@ export default function PersonalData(props) {
             )
     }
 
+    const isEmptyForm = () => {
+
+    }
+
     return (
-        <>
+        <div className={classes.personalDataForm}>
             <Typography variant="h6" gutterBottom>{chosenMovie.title}</Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
@@ -73,7 +81,10 @@ export default function PersonalData(props) {
                                fullWidth/>
                 </Grid>
             </Grid>
-            <CheckoutButton function={addPersonalData} name={"Next"}/>
-        </>
+            <CheckoutNextButton function={addPersonalData}
+                                name={"Next"}
+                                disabled={(_.isEmpty(lastName) || _.isEmpty(firstName) || _.isEmpty(phone) || _.isEmpty(email))}/>
+            <CheckoutBackButton function={props.handleBack} name={"Back"}/>
+        </div>
     )
 }

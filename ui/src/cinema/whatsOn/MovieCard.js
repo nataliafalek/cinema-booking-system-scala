@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import React from "react";
 import {useHistory} from "react-router-dom";
 import useLocalStorage from "../../localstorage/useLocalStorage";
+import Grid from "@material-ui/core/Grid";
 
 export default function MovieCard(props) {
     const history = useHistory();
@@ -26,23 +27,36 @@ export default function MovieCard(props) {
     }
 
     return (
-        props.movies.map((movie, idx) => <Card key={`${movie.title}-${idx}`} className={classes.movieCardContent}>
-                <CardMedia
-                    className={classes.media}
-                    image={movie.imageUrl}
-                />
-                <CardContent >
-                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        {movie.title}
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    {movie.scheduledMovieIdWithStartTime.map((scheduledMovieWithHours) =>
-                        <Button size="small" key={scheduledMovieWithHours[0]} onClick={() =>
-                            chooseMovie(movie, scheduledMovieWithHours)}>{scheduledMovieWithHours[1]}</Button>
-                    )}
-                </CardActions>
-            </Card>
-        )
+        <Grid container spacing={4}>{
+            props.movies.map((movie, idx) =>
+                <Grid item key={movie.title} xs={12}>
+                    <Card key={`${movie.title}-${idx}`} className={classes.movieCardContent}>
+                        <CardMedia
+                            className={classes.movieCardMedia}
+                            image={movie.imageUrl}
+                        />
+                        <CardContent>
+                            <Typography className={classes.movieCardMediaTitle} variant={"h4"} color="inherit"
+                                        gutterBottom>
+                                {movie.title}
+                            </Typography>
+                        </CardContent>
+                        <CardActions>
+                            {movie.scheduledMovieIdWithStartTime.map((scheduledMovieWithHours) =>
+                                <Button size="large"
+                                        color={"inherit"}
+                                        key={scheduledMovieWithHours[0]} onClick={() =>
+                                    chooseMovie(movie, scheduledMovieWithHours)}>
+                                    <span className={classes.movieCardMediaHour}>
+                                     {scheduledMovieWithHours[1]}
+                                    </span>
+                                </Button>
+                            )}
+                        </CardActions>
+                    </Card>
+                </Grid>
+            )
+        }
+        </Grid>
     )
 }

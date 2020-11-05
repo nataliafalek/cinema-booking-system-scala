@@ -6,16 +6,17 @@ import useLocalStorage from "../../localstorage/useLocalStorage";
 import SeatTextField from "../../common/SeatTextField";
 import * as HttpService from "../../http/HttpService";
 import _ from "lodash";
-import CheckoutButton from "../../common/CheckoutButton";
+import CheckoutNextButton from "./CheckoutNextButton";
+import CheckoutBackButton from "./CheckoutBackButton";
 
-export default function Summary() {
+export default function Summary(props) {
     const classes = useStyles();
     const chosenSeatsAndPrices = useLocalStorage('chosenSeatsAndPrices')[0];
     const chosenMovie = useLocalStorage('chosenMovie')[0];
     const personalDataId = useLocalStorage('personalDataId')[0];
-    const [personalData, setPersonalData]= useLocalStorage('personalData', null);
+    const [personalData, setPersonalData] = useLocalStorage('personalData', null);
     const sumToPay = _.sumBy(chosenSeatsAndPrices.map(chosenSeatAndPrice => chosenSeatAndPrice.price),
-            price => price.ticketPrice)
+        price => price.ticketPrice)
 
     useEffect(() => {
         getPersonalData()
@@ -43,19 +44,19 @@ export default function Summary() {
     }
 
     return (
-        <>
+        <div className={classes.checkoutSummary}>
             <Grid container spacing={2}>
-                <SummaryText title={"Movie"} value={chosenMovie.title} />
-                <SummaryText title={"Start Hour"} value={chosenMovie.startHour} />
+                <SummaryText title={"Movie"} value={chosenMovie.title}/>
+                <SummaryText title={"Start Hour"} value={chosenMovie.startHour}/>
             </Grid>
             {personalData ? <>
                 <Grid container spacing={2}>
-                    <SummaryText title={"First name"} value={personalData.firstName} />
-                    <SummaryText title={"Last Name"} value={personalData.lastName} />
+                    <SummaryText title={"First name"} value={personalData.firstName}/>
+                    <SummaryText title={"Last Name"} value={personalData.lastName}/>
                 </Grid>
                 <Grid container spacing={2}>
-                    <SummaryText title={"Email"} value={personalData.email} />
-                    <SummaryText title={"Phone"} value={personalData.phoneNumber} />
+                    <SummaryText title={"Email"} value={personalData.email}/>
+                    <SummaryText title={"Phone"} value={personalData.phoneNumber}/>
                 </Grid>
             </> : null}
             <Typography variant="h6" gutterBottom className={classes.title}>
@@ -71,17 +72,17 @@ export default function Summary() {
                 </form>
             ))}
             <Grid container spacing={2}>
-                <SummaryText title={""} value={""} />
-                <SummaryText title={"Payment"} value={`${sumToPay}$`} />
+                <SummaryText title={""} value={""}/>
+                <SummaryText title={"Payment"} value={`${sumToPay}$`}/>
             </Grid>
-            <CheckoutButton function={saveReservation} name={"Payment"}/>
-        </>
+            <CheckoutNextButton function={saveReservation} name={"Payment"}/>
+            <CheckoutBackButton function={props.handleBack} name={"Back"}/>
+        </div>
     );
 }
 
 function SummaryText(props) {
     const classes = useStyles();
-
     return (
         <Grid item xs={12} sm={6}>
             <Typography variant="h6" gutterBottom className={classes.title}>

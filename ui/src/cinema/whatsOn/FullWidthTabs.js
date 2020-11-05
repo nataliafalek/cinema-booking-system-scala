@@ -8,6 +8,7 @@ import Tab from "@material-ui/core/Tab";
 import MovieCard from "./MovieCard";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import {Paper} from "@material-ui/core";
 
 export default function FullWidthTabs(props) {
     const classes = useStyles();
@@ -25,34 +26,38 @@ export default function FullWidthTabs(props) {
 
     return (
         <div>
-            <AppBar position="static" color="default">
-                <Tabs
-                    value={dayIndex}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                    className={classes.whatsOnTabs}
-                >
-                    {_.map(daysWithIndex, (movies, day) =>
-                        <Tab className={classes.whatsOnTab} label={day} {...({
-                            id: `full-width-tab-${daysWithIndex[day]}`,
-                            'aria-controls': `full-width-tabpanel-${daysWithIndex[day]}`,
-                        })} key={daysWithIndex[day]}/>
-                    )}
-                </Tabs>
-            </AppBar>
-            {_.map(daysWithIndex, (index, day) =>
-                <TabPanelContent key={index} index={index} moviesByDay={props.moviesByDay} day={day} dayIndex={dayIndex} />
-            )}
+            <Paper className={classes.contentBackground}>
+                <AppBar position="static" color="inherit" className={classes.whatsOnAppBar}>
+                    <Tabs
+                        value={dayIndex}
+                        onChange={handleChange}
+                        indicatorColor="inherit"
+                        textColor="inherit"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                        className={classes.whatsOnTabs}
+                    >
+                        {_.map(daysWithIndex, (movies, day) =>
+                            <Tab className={classes.whatsOnTab}
+                                 label={<span className={classes.tabLabel}>{day}</span>} {...({
+                                id: `full-width-tab-${daysWithIndex[day]}`,
+                                'aria-controls': `full-width-tabpanel-${daysWithIndex[day]}`,
+                            })} key={daysWithIndex[day]}/>
+                        )}
+                    </Tabs>
+                </AppBar>
+                {_.map(daysWithIndex, (index, day) =>
+                    <TabPanelContent key={index} index={index} moviesByDay={props.moviesByDay} day={day}
+                                     dayIndex={dayIndex}/>
+                )}
+            </Paper>
         </div>
     );
 }
 
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <div
@@ -73,9 +78,18 @@ function TabPanel(props) {
 
 function TabPanelContent(props) {
     const moviesByDay = props.moviesByDay[props.day]
-    return(
+    return (
         <TabPanel value={props.dayIndex} index={props.index}>
-            {!_.isEmpty(moviesByDay) ? <MovieCard key={props.index} movies={moviesByDay} /> : "No repertoire"}
+            {!_.isEmpty(moviesByDay) ? <MovieCard key={props.index} movies={moviesByDay}/> : <NoRrepertoire/>}
         </TabPanel>
+    )
+}
+
+function NoRrepertoire() {
+    const classes = useStyles();
+    return (
+        <div className={classes.noRepertoire}>
+            No repertoire
+        </div>
     )
 }

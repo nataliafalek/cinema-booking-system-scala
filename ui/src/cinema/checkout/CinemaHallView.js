@@ -10,7 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import useLocalStorage from "../../localstorage/useLocalStorage";
 import SeatTextField from "../../common/SeatTextField";
-import CheckoutButton from "../../common/CheckoutButton";
+import CheckoutNextButton from "./CheckoutNextButton";
+import Grid from "@material-ui/core/Grid";
 
 export default function CinemaHallView(props) {
     const chosenMovie = useLocalStorage('chosenMovie')[0];
@@ -45,7 +46,7 @@ export default function CinemaHallView(props) {
         }
         const includesSeat = chosenSeatsAndPrices.map(chosenSeatAndPrice =>
             chosenSeatAndPrice.seat.seatId).includes(seat.seatId);
-        if(!includesSeat) {
+        if (!includesSeat) {
             setChosenSeatsAndPrices([...chosenSeatsAndPrices, seatAndPrice])
         }
     }
@@ -75,7 +76,7 @@ export default function CinemaHallView(props) {
         const seatClass = includesSeat ? classes.cinemaHallSeatReserved : classes.cinemaHallSeatFree;
         return (
             <div className={seatClass}
-                 key={`${seat.columnNumber}-${seat.columnNumber}-${seat.rowNumber}`}
+                 key={seat.seatId}
                  onClick={() => chooseSeats(seat)}>
                 {seat.seatNumber}
             </div>
@@ -89,43 +90,63 @@ export default function CinemaHallView(props) {
 
     return (
         <div className={classes.cinemaHall}>
-            <div>Title: {chosenMovie.title}</div>
-            <div>Hour: {chosenMovie.startHour}</div>
-            {_.map(cinemaHall, (rows, columnNumber) =>
-                <div key={columnNumber} className={classes.cinemaHallRow}>
-                    {rows.map(seat => renderSeat(seat))}
-                </div>
-            )}
+            <div className={classes.cinemaHallViewHeader}><span>Title: {chosenMovie.title}</span></div>
+            <div className={classes.cinemaHallViewHeader}><span>Hour: {chosenMovie.startHour}</span></div>
+            <div className={classes.cinemaHallView}>
+                <div className={classes.cinemaHallViewScreen}>SCREEN</div>
+                {_.map(cinemaHall, (rows, rowNumber) =>
+                    <div key={rowNumber} className={classes.cinemaHallRow}>
+                        {rows.map(seat => renderSeat(seat))} <span
+                        className={classes.cinemaHallViewRowNumber}>{rowNumber}</span>
+                    </div>
+                )}
+            </div>
             <div>
                 {!_.isEmpty(chosenSeatsAndPrices) ? chosenSeatsAndPrices.map((seatAndPrice) =>
-                    <form key={`${seatAndPrice.seat.columnNumber}-${seatAndPrice.seat.columnNumber}-${seatAndPrice.seat.rowNumber}`}
-                          className={classes.root} noValidate autoComplete="off">
-                        <SeatTextField value={seatAndPrice.seat.seatNumber} label={"Seat number"} />
-                        <SeatTextField value={seatAndPrice.seat.rowNumber} label={"Row number"} />
-                        <FormControl className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">Price</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                value={seatAndPrice.price}
-                                onChange={(event) =>
-                                    setPrice(seatAndPrice.seat, event.target.value)}
-                                label="Price"
-                            >
-                                {ticketPrices.map((ticket, idx) =>
-                                    <MenuItem key={idx}
-                                              value={ticket}>{ticket.ticketType} - {ticket.ticketPrice}$</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={(() =>
-                            deleteSeatAndPrice(seatAndPrice.seat))}>
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </form>
+                    <Grid container
+                          spacing={4}
+                          key={`${seatAndPrice.seat.columnNumber}-${seatAndPrice.seat.columnNumber}-${seatAndPrice.seat.rowNumber}`}>
+                        <Grid item xs={3}>
+                            <SeatTextField value={seatAndPrice.seat.seatNumber} label={"Seat number"}
+                                           classNameProps={classes.cinemaHallViewForm}/>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <SeatTextField value={seatAndPrice.seat.rowNumber} label={"Row number"}
+                                           classNameProps={classes.cinemaHallViewForm}/>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <FormControl className={classes.formControl}>
+                                <InputLabel>Price</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-outlined-label"
+                                    id="demo-simple-select-outlined"
+                                    value={seatAndPrice.price}
+                                    onChange={(event) =>
+                                        setPrice(seatAndPrice.seat, event.target.value)}
+                                    label="Price"
+                                >
+                                    {ticketPrices.map((ticket, idx) =>
+                                        <MenuItem key={idx}
+                                                  value={ticket}>{ticket.ticketType} - {ticket.ticketPrice}$</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <IconButton color={"inherit"} size={"large"} aria-label="delete" className={classes.margin}
+                                        onClick={(() =>
+                                            deleteSeatAndPrice(seatAndPrice.seat))}>
+                                <DeleteIcon fontSize="small"/>
+                            </IconButton>
+                        </Grid>
+                    </Grid>
                 ) : null}
             </div>
-            <CheckoutButton function={chooseSeatsAndPrices} name={"Next"}/>
+            <CheckoutNextButton function={chooseSeatsAndPrices}
+                                disabled={_.isEmpty(chosenSeatsAndPrices) ||
+                                _.some(chosenSeatsAndPrices, (chosenSeatAndPrice) =>
+                                    _.isEmpty(chosenSeatAndPrice.price))}
+                                name={"Next"}/>
         </div>
     )
 }

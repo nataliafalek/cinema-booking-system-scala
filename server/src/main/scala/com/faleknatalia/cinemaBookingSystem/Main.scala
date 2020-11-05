@@ -61,6 +61,10 @@ object Main extends LazyLogging {
         get {
           complete(movieService.findAllMovies())
         }
+      }  ~ path("movie" / "details" / LongNumber) { movieId =>
+        get {
+          complete(movieService.findMovieById(movieId))
+        }
       } ~ path("schedule" / "movie" / "list") {
         get {
           complete(movieService.findAllScheduledMovies())

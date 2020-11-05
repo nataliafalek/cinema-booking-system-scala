@@ -60,6 +60,10 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
     }
   }
 
+  def findMovieById(movieId: Long): Future[Option[Movie]] = {
+    db.run(moviesTable.filter(movie => movie.id === movieId).result.headOption)
+  }
+
   def findAllMovies(): Future[Seq[Movie]] = db.run(moviesTable.result)
 
   def findAllMoviesByDayOfTheWeek(): Future[Map[DayOfWeek, Seq[MovieCardDto]]] = {
@@ -123,9 +127,9 @@ class MovieService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionContext)
 
     val movieCardsByDayOfTheWeek = moviesByDayOfTheWeek.toSeq.map { case (dayOfTheWeek, moviesWithStartTime) =>
       val groupedByTitle = moviesWithStartTime.groupBy(movieWithStartTime => movieWithStartTime._1.title)
-      val dailyRepertoire = moviesWithStartTime.distinct.map { case (movie, start, scheduledMovieId) =>
+      val dailyRepertoire = moviesWithStartTime.distinct.map { case (movie, _, _) =>
         val movieSchedules = groupedByTitle(movie.title)
-        val scheduledMovieIdsWithStartHours = movieSchedules.map { case (movie, startTime, scheduledMovieID) =>
+        val scheduledMovieIdsWithStartHours = movieSchedules.map { case (_, startTime, scheduledMovieID) =>
           scheduledMovieID -> startTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
         }
         MovieCardDto(movie.title, movie.id, scheduledMovieIdsWithStartHours, movie.imageUrl.toString)

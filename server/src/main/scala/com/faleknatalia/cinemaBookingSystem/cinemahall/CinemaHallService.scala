@@ -37,19 +37,22 @@ class CinemaHallService(db: jdbc.JdbcBackend.Database)(implicit ec: ExecutionCon
     databaseUtils.insertDataIfNotExists(seatsTable, generatedSeats)
   }
 
-  def findCinemaHallWithSeatsByScheduledMovieId(scheduledMovieId: Long): Future[Map[String, Seq[SeatDetails]]] = {
+  def findCinemaHallWithSeatsByScheduledMovieId(scheduledMovieId: Long): Future[Map[RowNumber, Seq[SeatDetails]]] = {
     val selectSeatsAndSeatsDetails = for {
       scheduledMovie <- scheduledMoviesTable if scheduledMovie.id === scheduledMovieId
       seat <- seatsTable if seat.cinemaHallId === scheduledMovie.cinemaHallId
       seatDetails <- scheduledMovieWithSeatsTable if seatDetails.scheduledMovieId === scheduledMovieId && seatDetails.seatId === seat.id
     } yield (seat, seatDetails)
 
-    val groupByColumnQuery = selectSeatsAndSeatsDetails.result.map { seats =>
+    val groupByRowQuery = selectSeatsAndSeatsDetails.result.map { seats =>
       val seatsDetails = seats.map { case (seat, scheduledMovieWithSeat) =>
         SeatDetails(seat.seatNumber, seat.rowNumber, seat.columnNumber, seat.id, seat.cinemaHallId, scheduledMovieWithSeat.isFree)
       }
-      seatsDetails.groupBy(seat => seat.columnNumber.toString)
+      seatsDetails.groupBy(seat => seat.rowNumber.toString)
     }
-    db.run(groupByColumnQuery)
+    db.run(groupByRowQuery)
   }
+
+  type RowNumber = String
 }
+
